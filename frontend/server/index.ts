@@ -3,8 +3,31 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+
+// Skip body parsing for proxy routes to avoid consuming the request body
+app.use('/api/v1', (req, res, next) => {
+  // Don't parse body for proxy routes - let the proxy handle it
+  next();
+});
+
+// Parse JSON and URL encoded bodies for non-proxy routes
+app.use((req, res, next) => {
+  if (req.path.startsWith('/api/v1')) {
+    // Skip body parsing for proxy routes
+    next();
+  } else {
+    express.json()(req, res, next);
+  }
+});
+
+app.use((req, res, next) => {
+  if (req.path.startsWith('/api/v1')) {
+    // Skip URL encoding parsing for proxy routes
+    next();
+  } else {
+    express.urlencoded({ extended: false })(req, res, next);
+  }
+});
 
 app.use((req, res, next) => {
   const start = Date.now();

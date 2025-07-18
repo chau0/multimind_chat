@@ -14,16 +14,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use('/api/v1', createProxyMiddleware({
     target: BACKEND_API_URL,
     changeOrigin: true,
-    pathRewrite: {
-      '^/api/v1': '/api/v1', // keep the same path
-    },
+    timeout: 30000, // 30 second timeout
+    proxyTimeout: 30000,
+    selfHandleResponse: false, // Let the proxy handle the response
+    // Preserve the original headers and body
+    preserveHeaderKeyCase: true,
+    followRedirects: false,
+    // Remove the redundant pathRewrite since we want to keep /api/v1
     onProxyReq: (proxyReq, req, res) => {
       // Log the request
-      console.log(`Proxying request to: ${BACKEND_API_URL}${proxyReq.path}`);
+      console.log(`Proxying ${req.method} request to: ${BACKEND_API_URL}${proxyReq.path}`);
+      console.log(`Request headers:`, req.headers);
+
+      // Ensure content-type is preserved for POST requests
+      if (req.method === 'POST' && req.headers['content-type']) {
+        proxyReq.setHeader('content-type', req.headers['content-type']);
+      }
+    },
+    onProxyRes: (proxyRes, req, res) => {
+      // Log the response
+      console.log(`Received response with status: ${proxyRes.statusCode}`);
     },
     onError: (err, req, res) => {
       console.error('Proxy error:', err);
-      res.status(500).json({ message: 'Backend service unavailable', error: err.message });
+      if (!res.headersSent) {
+        res.status(500).json({ message: 'Backend service unavailable', error: err.message });
+      }
     }
   }));
   
@@ -123,7 +139,7 @@ function extractMentions(content: string): string[] {
     mentions.push(match[1]);
   }
   
-  return [...new Set(mentions)]; // Remove duplicates
+  return Array.from(new Set(mentions)); // Remove duplicates
 }
 
 async function generateAIResponse(userMessage: string, agent: any, originalMessage: any): Promise<string> {
