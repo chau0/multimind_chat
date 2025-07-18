@@ -83,24 +83,20 @@ async def async_client(db_session, mock_llm_service):
     """Async HTTP client for async tests."""
     async def override_get_async_db():
         async with AsyncTestingSessionLocal() as session:
-            try:
-                yield session
-            finally:
-                pass
+            yield session
 
     def override_get_db():
-        try:
-            yield db_session
-        finally:
-            pass
+        yield db_session
 
     app.dependency_overrides[get_db] = override_get_db
     app.dependency_overrides[get_async_db] = override_get_async_db
 
-    async with AsyncClient(app=app, base_url="http://test") as test_client:
-        yield test_client
-
-    app.dependency_overrides.clear()
+    client = AsyncClient(app=app, base_url="http://test")
+    try:
+        yield client
+    finally:
+        await client.aclose()
+        app.dependency_overrides.clear()
 
 @pytest.fixture(scope="function")
 def test_agents(db_session):
