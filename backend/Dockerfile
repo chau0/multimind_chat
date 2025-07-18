@@ -15,6 +15,9 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
+# Create logs directory
+RUN mkdir -p /app/logs
+
 COPY requirements/ requirements/
 RUN pip install uv && \
     uv pip install --system --no-cache -r requirements/base.txt

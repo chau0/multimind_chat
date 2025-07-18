@@ -20,6 +20,12 @@ class Settings(BaseSettings):
     environment: str = "development"
     debug: bool = False
     
+    # Logging configuration
+    log_level: str = "INFO"
+    log_dir: str = "logs"
+    log_max_files: int = 30
+    log_enable_console: bool = True
+    
     class Config:
         env_file = ".env"
     
