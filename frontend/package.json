@@ -11,7 +11,15 @@
     "db:push": "drizzle-kit push",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "test:coverage": "vitest --coverage"
+    "test:coverage": "vitest --coverage",
+    "test:integration": "vitest --config vitest.integration.config.ts",
+    "test:integration:ui": "vitest --config vitest.integration.config.ts --ui",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:debug": "playwright test --debug",
+    "test:e2e:report": "playwright show-report",
+    "test:e2e:install": "playwright install"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -81,6 +89,7 @@
     "zod-validation-error": "^3.4.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.54.1",
     "@replit/vite-plugin-cartographer": "^0.2.7",
     "@replit/vite-plugin-runtime-error-modal": "^0.0.3",
     "@tailwindcss/typography": "^0.5.15",
@@ -102,6 +111,7 @@
     "drizzle-kit": "^0.30.4",
     "esbuild": "^0.25.0",
     "jsdom": "^23.0.1",
+    "playwright": "^1.54.1",
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.17",
     "tsx": "^4.19.1",
