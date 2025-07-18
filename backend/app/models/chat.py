@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, Text
 from sqlalchemy.orm import relationship
 from app.utils.db import Base
 
@@ -6,20 +6,21 @@ class Agent(Base):
     __tablename__ = "agents"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, unique=True, index=True)
-    description = Column(String)
+    name = Column(String(255), unique=True, index=True)  # Limited length for indexing
+    description = Column(String(500))  # Limited length for better performance
+    system_prompt = Column(Text)  # Can be unlimited for system prompts
 
 class ChatSession(Base):
     __tablename__ = "chat_sessions"
 
-    id = Column(String, primary_key=True, index=True)
+    id = Column(String(255), primary_key=True, index=True)  # Limited length for indexing
 
 class Message(Base):
     __tablename__ = "messages"
 
     id = Column(Integer, primary_key=True, index=True)
-    content = Column(String)
-    session_id = Column(String, ForeignKey("chat_sessions.id"))
+    content = Column(Text)  # Messages can be long
+    session_id = Column(String(255), ForeignKey("chat_sessions.id"))
     agent_id = Column(Integer, ForeignKey("agents.id"))
 
     session = relationship("ChatSession")

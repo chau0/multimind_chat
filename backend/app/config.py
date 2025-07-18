@@ -10,8 +10,11 @@ class Settings(BaseSettings):
     azure_sql_password: str
     azure_sql_driver: str = "ODBC Driver 18 for SQL Server"
     
-    # OpenAI configuration
-    openai_api_key: str
+    # Azure OpenAI configuration
+    azure_openai_endpoint: str
+    azure_openai_api_key: str
+    azure_openai_deployment: str
+    azure_openai_api_version: str = "2024-12-01-preview"
     
     # Application configuration
     environment: str = "development"
