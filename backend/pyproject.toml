@@ -1,0 +1,34 @@
+[project]
+name = "multimind-backend"
+version = "0.1.0"
+description = "Backend for the Multimind AI chat application"
+authors = [{ name = "Your Name", email = "you@example.com" }]
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi==0.109.0",
+    "uvicorn[standard]==0.27.0",
+    "sqlalchemy==2.0.25",
+    "alembic==1.13.1",
+    "psycopg2-binary==2.9.9",
+    "pydantic[email]==2.5.3",
+    "python-dotenv==1.0.1",
+    "openai==1.10.0",
+    "httpx==0.26.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==8.0.0",
+    "pytest-cov==4.1.0",
+    "black==24.1.1",
+    "isort==5.13.2",
+    "flake8==7.0.0",
+    "mypy==1.8.0",
+    "httpx==0.26.0",
+]
+
+[tool.black]
+line-length = 88
+
+[tool.isort]
+profile = "black"
