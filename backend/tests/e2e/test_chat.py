@@ -2,7 +2,7 @@ import pytest
 from httpx import AsyncClient
 
 @pytest.mark.asyncio
-async def test_chat_flow(async_client: AsyncClient, test_agents):
+async def test_chat_flow(async_client: AsyncClient, async_test_agents):
     """Test the complete chat flow using an async client."""
     
     # 1. List agents

@@ -30,6 +30,10 @@ async def create_message_async(db: AsyncSession, message: MessageCreate) -> dict
         if not agent:
             raise ValueError(f"Agent '{agent_name}' not found.")
         
+        # Access agent attributes while session is active
+        agent_id = agent.id
+        agent_name_str = agent.name
+        
         # Build context from session history
         context = await _build_context_async(db, message.session_id)
         
@@ -47,7 +51,7 @@ async def create_message_async(db: AsyncSession, message: MessageCreate) -> dict
         agent_response = MessageCreate(
             content=response_content,
             session_id=message.session_id,
-            agent_id=agent.id
+            agent_id=agent_id
         )
         response_message = await chat_repo.create_message_async(db, agent_response)
         
@@ -55,7 +59,7 @@ async def create_message_async(db: AsyncSession, message: MessageCreate) -> dict
             "id": response_message.id,
             "content": response_content,
             "session_id": message.session_id,
-            "agent_name": agent.name
+            "agent_name": agent_name_str
         }
         
     except Exception as e:
@@ -70,7 +74,9 @@ async def _build_context_async(db: AsyncSession, session_id: str) -> List[str]:
     for msg in messages:
         if msg.agent_id:
             agent = await agent_repo.get_agent_by_id_async(db, msg.agent_id)
-            context.append(f"{agent.name}: {msg.content}")
+            if agent:
+                agent_name = agent.name  # Access name while session is active
+                context.append(f"{agent_name}: {msg.content}")
         else:
             context.append(f"User: {msg.content}")
     

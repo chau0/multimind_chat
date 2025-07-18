@@ -6,7 +6,7 @@ from app.schemas import chat as schemas
 from typing import List
 
 def create_message(db: Session, message: schemas.MessageCreate):
-    db_message = models.Message(**message.dict())
+    db_message = models.Message(**message.model_dump())
     db.add(db_message)
     db.commit()
     db.refresh(db_message)
@@ -17,7 +17,7 @@ def get_messages_by_session(db: Session, session_id: str):
 
 async def create_message_async(db: AsyncSession, message: schemas.MessageCreate) -> models.Message:
     """Create message asynchronously."""
-    db_message = models.Message(**message.dict())
+    db_message = models.Message(**message.model_dump())
     db.add(db_message)
     await db.commit()
     await db.refresh(db_message)
