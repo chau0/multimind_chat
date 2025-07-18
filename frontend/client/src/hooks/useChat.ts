@@ -3,13 +3,13 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { chatService } from "@/services/chatService";
 import type { Message, Agent, SendMessageRequest } from "@/types";
 
-export function useChat() {
+export function useChat(sessionId: string = "default") {
   const [typingAgent, setTypingAgent] = useState<Agent | null>(null);
   const queryClient = useQueryClient();
 
   const messagesQuery = useQuery({
-    queryKey: ["/api/messages"],
-    queryFn: () => chatService.getMessages(),
+    queryKey: [`/api/v1/chat/sessions/${sessionId}/messages`],
+    queryFn: () => chatService.getMessages(sessionId),
     refetchInterval: false,
   });
 
@@ -17,10 +17,10 @@ export function useChat() {
     mutationFn: (messageData: SendMessageRequest) => chatService.sendMessage(messageData),
     onMutate: async (messageData) => {
       // Cancel outgoing refetches
-      await queryClient.cancelQueries({ queryKey: ["/api/messages"] });
+      await queryClient.cancelQueries({ queryKey: [`/api/v1/chat/sessions/${sessionId}/messages`] });
 
       // Snapshot previous value
-      const previousMessages = queryClient.getQueryData<Message[]>(["/api/messages"]);
+      const previousMessages = queryClient.getQueryData<Message[]>([`/api/v1/chat/sessions/${sessionId}/messages`]);
 
       // Optimistically update with user message
       const optimisticMessage: Message = {
@@ -31,7 +31,7 @@ export function useChat() {
         mentions: messageData.mentions,
       };
 
-      queryClient.setQueryData<Message[]>(["/api/messages"], (old = []) => [
+      queryClient.setQueryData<Message[]>([`/api/v1/chat/sessions/${sessionId}/messages`], (old = []) => [
         ...old,
         optimisticMessage,
       ]);
@@ -40,7 +40,7 @@ export function useChat() {
     },
     onSuccess: (data) => {
       // Update with real messages from server
-      queryClient.setQueryData<Message[]>(["/api/messages"], (old = []) => {
+      queryClient.setQueryData<Message[]>([`/api/v1/chat/sessions/${sessionId}/messages`], (old = []) => {
         // Remove the optimistic message and add real messages
         const withoutOptimistic = old.filter(msg => msg.id !== data.userMessage.id || msg.id < 1000000);
         return [...withoutOptimistic, data.userMessage, ...data.responses];
@@ -50,7 +50,7 @@ export function useChat() {
     onError: (error, variables, context) => {
       // Rollback on error
       if (context?.previousMessages) {
-        queryClient.setQueryData(["/api/messages"], context.previousMessages);
+        queryClient.setQueryData([`/api/v1/chat/sessions/${sessionId}/messages`], context.previousMessages);
       }
       setTypingAgent(null);
     },
@@ -61,7 +61,7 @@ export function useChat() {
 
     // Find typing agent for simulation
     if (mentions.length > 0) {
-      const agentsQuery = queryClient.getQueryData<Agent[]>(["/api/agents"]);
+      const agentsQuery = queryClient.getQueryData<Agent[]>(["/api/v1/agents"]);
       const firstMentionedAgent = agentsQuery?.find(agent => 
         mentions.some(mention => mention.toLowerCase() === agent.name.toLowerCase())
       );
@@ -74,10 +74,11 @@ export function useChat() {
       content: content.trim(),
       isUser: true,
       mentions,
+      sessionId
     };
 
     return sendMessageMutation.mutateAsync(messageData);
-  }, [sendMessageMutation, queryClient]);
+  }, [sendMessageMutation, queryClient, sessionId]);
 
   return {
     messages: messagesQuery.data || [],

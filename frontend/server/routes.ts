@@ -3,9 +3,33 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertMessageSchema } from "@shared/schema";
 import { z } from "zod";
+import axios from "axios";
+import { createProxyMiddleware } from "http-proxy-middleware";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Get all agents
+  // Backend API URL
+  const BACKEND_API_URL = process.env.BACKEND_API_URL || 'http://localhost:8000';
+  
+  // API Proxy for backend
+  app.use('/api/v1', createProxyMiddleware({
+    target: BACKEND_API_URL,
+    changeOrigin: true,
+    pathRewrite: {
+      '^/api/v1': '/api/v1', // keep the same path
+    },
+    onProxyReq: (proxyReq, req, res) => {
+      // Log the request
+      console.log(`Proxying request to: ${BACKEND_API_URL}${proxyReq.path}`);
+    },
+    onError: (err, req, res) => {
+      console.error('Proxy error:', err);
+      res.status(500).json({ message: 'Backend service unavailable', error: err.message });
+    }
+  }));
+  
+  // Fallback routes for local development/testing
+  
+  // Get all agents (fallback)
   app.get("/api/agents", async (req, res) => {
     try {
       const agents = await storage.getAllAgents();
@@ -15,7 +39,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get all messages
+  // Get all messages (fallback)
   app.get("/api/messages", async (req, res) => {
     try {
       const messages = await storage.getAllMessages();
@@ -25,7 +49,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Send a message and get AI response
+  // Send a message and get AI response (fallback)
   app.post("/api/messages", async (req, res) => {
     try {
       const messageData = insertMessageSchema.parse(req.body);

@@ -8,7 +8,7 @@ install: venv
 	uv pip install -r requirements/dev.txt
 
 dev: install
-	uv run uvicorn app.main:app --reload --port 8000
+	uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 test:
 	uv run pytest -v 

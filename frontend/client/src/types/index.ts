@@ -28,6 +28,7 @@ export interface SendMessageRequest {
   isUser: boolean;
   agentId?: number;
   mentions?: string[];
+  sessionId?: string;
 }
 
 export interface SendMessageResponse {

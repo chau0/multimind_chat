@@ -32,7 +32,7 @@ export function MessageBubble({ message, agent }: MessageBubbleProps) {
         <div className="bg-white rounded-2xl shadow-sm p-4 max-w-md lg:max-w-2xl">
           <div className="flex items-center space-x-2 mb-3">
             <span className="text-sm font-semibold text-gray-900">{agent?.displayName || 'Unknown'}</span>
-            {agent && (
+            {agent && agent.description && (
               <span className={`px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full`}>
                 {agent.description.split(' ')[0]}
               </span>

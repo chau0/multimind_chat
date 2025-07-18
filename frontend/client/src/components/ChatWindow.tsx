@@ -71,7 +71,7 @@ export function ChatWindow() {
           <div className="flex-1">
             <div className="bg-white rounded-2xl shadow-sm p-4 max-w-md">
               <div className="flex items-center space-x-2 mb-2">
-                <span className="text-sm font-medium text-gray-500">{typingAgent.displayName} is typing</span>
+                <span className="text-sm font-medium text-gray-500">{typingAgent.displayName || typingAgent.name} is typing</span>
                 <div className="flex space-x-1">
                   <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
                   <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>

@@ -3,7 +3,7 @@ import { chatService } from "@/services/chatService";
 
 export function useAgents() {
   return useQuery({
-    queryKey: ["/api/agents"],
+    queryKey: ["/api/v1/agents"],
     queryFn: () => chatService.getAgents(),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
