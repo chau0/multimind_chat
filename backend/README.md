@@ -1,11 +1,11 @@
 # Multimind Backend
 
-This is the backend for the Multimind AI chat application built with FastAPI.
+This is the backend for the Multimind AI chat application built with FastAPI and Azure SQL Database.
 
 ## Features
 
 - FastAPI web framework with automatic API documentation
-- PostgreSQL database with SQLAlchemy ORM
+- Azure SQL Database with SQLAlchemy ORM
 - OpenAI integration for AI chat functionality
 - Agent-based chat system
 - Session-based message history
@@ -15,18 +15,45 @@ This is the backend for the Multimind AI chat application built with FastAPI.
 
 - Python 3.11+
 - uv (Python package manager)
-- PostgreSQL (for production) or Docker (for development)
+- Azure SQL Database instance
+- Microsoft ODBC Driver 18 for SQL Server
 
 ## Setup
 
 1. **Install Python 3.11+ and uv**
    
-2. **Clone and navigate to the project**
+2. **Install Microsoft ODBC Driver 18 for SQL Server**
+   
+   **Ubuntu/Debian:**
+   ```bash
+   curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
+   curl https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/prod.list | sudo tee /etc/apt/sources.list.d/mssql-release.list
+   sudo apt-get update
+   sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18
+   sudo apt-get install -y unixodbc-dev
+   ```
+   
+   **RHEL/CentOS:**
+   ```bash
+   curl https://packages.microsoft.com/config/rhel/8/prod.repo | sudo tee /etc/yum.repos.d/mssql-release.repo
+   sudo yum remove unixODBC-utf16 unixODBC-utf16-devel
+   sudo ACCEPT_EULA=Y yum install -y msodbcsql18
+   sudo yum install -y unixODBC-devel
+   ```
+   
+   **macOS:**
+   ```bash
+   brew tap microsoft/mssql-release https://github.com/Microsoft/homebrew-mssql-release
+   brew update
+   HOMEBREW_NO_ENV_FILTERING=1 ACCEPT_EULA=Y brew install msodbcsql18 mssql-tools18
+   ```
+
+3. **Clone and navigate to the project**
    ```bash
    cd /home/azureuser/repo/Multimind/backend
    ```
 
-3. **Create virtual environment and install dependencies**
+4. **Create virtual environment and install dependencies**
    ```bash
    # Create virtual environment and install dependencies
    make install
@@ -36,12 +63,27 @@ This is the backend for the Multimind AI chat application built with FastAPI.
    uv pip install -r requirements/dev.txt
    ```
 
-4. **Environment configuration**
+5. **Configure Azure SQL Database**
+   
+   Create an Azure SQL Database instance and configure the connection:
+   
    ```bash
    cp .env.example .env
-   # Edit .env and fill in the required values:
-   # - DATABASE_URL: PostgreSQL connection string
+   # Edit .env and fill in your Azure SQL Database details:
+   # - AZURE_SQL_SERVER: your-server.database.windows.net
+   # - AZURE_SQL_DATABASE: your database name
+   # - AZURE_SQL_USERNAME: your username
+   # - AZURE_SQL_PASSWORD: your password
    # - OPENAI_API_KEY: Your OpenAI API key
+   ```
+
+6. **Run database migrations**
+   ```bash
+   # Initialize Alembic (first time only)
+   alembic revision --autogenerate -m "Initial migration"
+   
+   # Run migrations
+   alembic upgrade head
    ```
 
 ## Running the application
@@ -53,12 +95,45 @@ make dev
 
 This will start the application on `http://localhost:8000` with auto-reload enabled.
 
-### Using Docker (Recommended for development)
+### Using Docker
 ```bash
 docker-compose up --build
 ```
 
-This will start both the backend and a PostgreSQL database.
+This will start the backend connected to your Azure SQL Database.
+
+## Troubleshooting
+
+### ODBC Driver Issues
+If you encounter "ODBC Driver not found" errors:
+
+1. **Verify driver installation:**
+   ```bash
+   odbcinst -q -d -n "ODBC Driver 18 for SQL Server"
+   ```
+
+2. **List available drivers:**
+   ```bash
+   odbcinst -q -d
+   ```
+
+3. **Update driver name in .env if needed:**
+   ```bash
+   AZURE_SQL_DRIVER=ODBC Driver 17 for SQL Server  # if v18 not available
+   ```
+
+### Azure SQL Database Connection Issues
+
+1. **Check firewall rules:** Ensure your IP is allowed in Azure SQL Database firewall
+2. **Verify connection string:** Test connection using Azure Data Studio or sqlcmd
+3. **Check credentials:** Ensure username/password are correct
+
+### SSL/TLS Issues
+If you encounter SSL certificate errors, you can temporarily disable SSL verification (not recommended for production):
+```bash
+# In your .env file, modify the driver string:
+AZURE_SQL_DRIVER=ODBC Driver 18 for SQL Server;TrustServerCertificate=yes;
+```
 
 ## API Documentation
 
@@ -165,20 +240,31 @@ app/
 
 ## Deployment
 
-The application is containerized and ready for deployment:
+The application is containerized and ready for deployment to Azure:
 
-1. **Using Docker Compose** (for development/staging):
+1. **Azure Container Instances:**
    ```bash
-   docker-compose up -d
+   # Build and push to Azure Container Registry
+   az acr build --registry myregistry --image multimind-backend .
    ```
 
-2. **Production deployment**: Configure your production database URL and deploy the Docker container to your preferred platform.
+2. **Azure App Service:**
+   - Deploy using Docker container
+   - Set environment variables in App Service configuration
+
+3. **Azure Kubernetes Service (AKS):**
+   - Use the provided Dockerfile
+   - Configure secrets for database connection
 
 ## Environment Variables
 
 | Variable | Description | Required |
 |----------|-------------|----------|
-| `DATABASE_URL` | PostgreSQL connection string | Yes |
+| `AZURE_SQL_SERVER` | Azure SQL Server hostname | Yes |
+| `AZURE_SQL_DATABASE` | Database name | Yes |
+| `AZURE_SQL_USERNAME` | Database username | Yes |
+| `AZURE_SQL_PASSWORD` | Database password | Yes |
+| `AZURE_SQL_DRIVER` | ODBC driver name | No (defaults to ODBC Driver 18) |
 | `OPENAI_API_KEY` | OpenAI API key for AI functionality | Yes |
 
 ## Development
