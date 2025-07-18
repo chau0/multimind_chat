@@ -1,5 +1,6 @@
 import pytest
 from fastapi.testclient import TestClient
+from httpx import AsyncClient
 from app.main import app
 from app.utils.db import get_db, get_async_db, SessionLocal
 from app.models.chat import Agent, Base
@@ -75,6 +76,30 @@ def client(db_session, mock_llm_service):
     with TestClient(app) as test_client:
         yield test_client
     
+    app.dependency_overrides.clear()
+
+@pytest.fixture(scope="function")
+async def async_client(db_session, mock_llm_service):
+    """Async HTTP client for async tests."""
+    async def override_get_async_db():
+        async with AsyncTestingSessionLocal() as session:
+            try:
+                yield session
+            finally:
+                pass
+
+    def override_get_db():
+        try:
+            yield db_session
+        finally:
+            pass
+
+    app.dependency_overrides[get_db] = override_get_db
+    app.dependency_overrides[get_async_db] = override_get_async_db
+
+    async with AsyncClient(app=app, base_url="http://test") as test_client:
+        yield test_client
+
     app.dependency_overrides.clear()
 
 @pytest.fixture(scope="function")
