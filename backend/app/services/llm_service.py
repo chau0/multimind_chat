@@ -1,4 +1,4 @@
-from app.external.openai_client import get_openai_response, get_openai_response_async
+from app.external.openai_client import get_openai_response, get_openai_response_async, get_openai_response_with_messages_async
 from app.models.chat import Agent
 from typing import List
 import logging
@@ -12,26 +12,32 @@ def get_response(prompt: str) -> str:
 async def generate_response_async(agent: Agent, context: List[str], user_message: str) -> str:
     """Generate response using agent's system prompt and conversation context."""
     try:
-        # Build full prompt with agent context
-        system_prompt = f"You are {agent.name}. {agent.description}"
+        # Use agent's custom system prompt if available, otherwise fallback
+        system_prompt = agent.system_prompt or f"You are {agent.name}, {agent.description}"
         
-        # Add conversation history
-        conversation_history = "\n".join(context[-5:])  # Last 5 messages for context
+        # Build conversation messages for better context handling
+        messages = [
+            {"role": "system", "content": system_prompt}
+        ]
         
-        # Combine everything
-        full_prompt = f"""System: {system_prompt}
-
-Conversation History:
-{conversation_history}
-
-User: {user_message}
-
-Respond as {agent.name}:"""
+        # Add conversation history (last 8 messages for better context while staying within token limits)
+        for ctx_message in context[-8:]:
+            if ctx_message.startswith("User:"):
+                messages.append({"role": "user", "content": ctx_message[5:].strip()})
+            elif ":" in ctx_message:
+                # Agent message
+                agent_response = ctx_message.split(":", 1)[1].strip()
+                if agent_response:  # Only add non-empty responses
+                    messages.append({"role": "assistant", "content": agent_response})
         
-        response = await get_openai_response_async(full_prompt)
-        logger.info(f"Generated response for agent {agent.name}")
+        # Add current user message
+        messages.append({"role": "user", "content": user_message})
+        
+        response = await get_openai_response_with_messages_async(messages)
+        logger.info(f"Generated response for agent {agent.name} (length: {len(response)})")
         return response
         
     except Exception as e:
         logger.error(f"Error generating response for agent {agent.name}: {str(e)}")
-        raise Exception(f"Failed to generate response: {str(e)}")
+        # Return a fallback response instead of raising exception
+        return f"I apologize, but I'm having trouble processing your request right now. As {agent.name}, I'd be happy to help you once the technical issue is resolved."
