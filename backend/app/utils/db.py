@@ -10,12 +10,22 @@ logger = logging.getLogger(__name__)
 # Determine connection arguments based on database type
 def get_connect_args(database_url: str) -> dict:
     """Get appropriate connection arguments based on database type."""
-    if database_url.startswith("postgresql"):
-        # PostgreSQL/Supabase connection args
+    if database_url.startswith("postgresql://"):
+        # PostgreSQL/Supabase connection args for psycopg2 (sync)
         return {
             "connect_args": {
                 "sslmode": "require",  # Supabase requires SSL
                 "application_name": "multimind-backend"
+            }
+        }
+    elif database_url.startswith("postgresql+asyncpg://"):
+        # PostgreSQL/Supabase connection args for asyncpg (async)
+        return {
+            "connect_args": {
+                "ssl": "require",  # asyncpg uses 'ssl' instead of 'sslmode'
+                "server_settings": {
+                    "application_name": "multimind-backend"
+                }
             }
         }
     elif database_url.startswith("mssql"):
