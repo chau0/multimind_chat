@@ -37,7 +37,7 @@ export function AgentSelector({ selectedAgent, onAgentSelect }: AgentSelectorPro
         <div className={`w-6 h-6 bg-gradient-to-br ${currentAgent.color} rounded-full flex items-center justify-center`}>
           <span className="text-white text-xs font-semibold">{currentAgent.avatar}</span>
         </div>
-        <span className="text-sm font-medium text-gray-700">{currentAgent.displayName}</span>
+        <span className="text-sm font-medium text-gray-700">{currentAgent.display_name || currentAgent.name}</span>
         <ChevronDown className="w-4 h-4 text-gray-500" />
       </button>
 
@@ -65,8 +65,8 @@ export function AgentSelector({ selectedAgent, onAgentSelect }: AgentSelectorPro
                   <span className="text-white text-sm font-semibold">{agent.avatar}</span>
                 </div>
                 <div className="text-left">
-                  <div className="text-sm font-medium text-gray-900">{agent.displayName}</div>
-                  <div className="text-xs text-gray-500">{agent.description}</div>
+                  <div className="text-sm font-medium text-gray-900">{agent.display_name || agent.name}</div>
+                  <div className="text-xs text-gray-500">{agent.description || ''}</div>
                 </div>
               </button>
             ))}

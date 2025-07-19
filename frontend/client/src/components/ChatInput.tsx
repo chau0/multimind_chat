@@ -2,15 +2,18 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { Send, Paperclip, Smile } from "lucide-react";
 import { useMentionParser } from "@/hooks/useMentionParser";
 import { useAgents } from "@/hooks/useAgents";
+import { getAvatarEmoji } from "@/utils/avatarMapping";
 
 interface ChatInputProps {
   onSendMessage: (content: string, mentions: string[]) => void;
   disabled?: boolean;
+  shouldFocus?: boolean;
 }
 
-export function ChatInput({ onSendMessage, disabled }: ChatInputProps) {
+export function ChatInput({ onSendMessage, disabled, shouldFocus }: ChatInputProps) {
   const [message, setMessage] = useState("");
   const [cursorPosition, setCursorPosition] = useState(0);
+  const [selectedAgentIndex, setSelectedAgentIndex] = useState(0);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   
   const { data: agents = [] } = useAgents();
@@ -25,6 +28,18 @@ export function ChatInput({ onSendMessage, disabled }: ChatInputProps) {
   } = useMentionParser(agents);
 
   const filteredAgents = getFilteredAgents(mentionQuery);
+
+  // Reset selected index when filtered agents change
+  useEffect(() => {
+    setSelectedAgentIndex(0);
+  }, [filteredAgents.length, showMentionSuggestions]);
+
+  // Auto-focus when shouldFocus prop changes (e.g., after receiving server response)
+  useEffect(() => {
+    if (shouldFocus && textareaRef.current && !showMentionSuggestions) {
+      textareaRef.current.focus();
+    }
+  }, [shouldFocus, showMentionSuggestions]);
 
   // Auto-resize textarea
   useEffect(() => {
@@ -43,22 +58,6 @@ export function ChatInput({ onSendMessage, disabled }: ChatInputProps) {
     handleInputChange(value, cursor);
   }, [handleInputChange]);
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  }, []);
-
-  const handleSend = useCallback(() => {
-    if (!message.trim() || disabled) return;
-    
-    const mentions = parseMentions(message);
-    onSendMessage(message, mentions);
-    setMessage("");
-    setShowMentionSuggestions(false);
-  }, [message, disabled, parseMentions, onSendMessage, setShowMentionSuggestions]);
-
   const handleMentionSelect = useCallback((agentName: string) => {
     const { newValue, newCursorPosition } = insertMention(message, cursorPosition, agentName);
     setMessage(newValue);
@@ -73,6 +72,57 @@ export function ChatInput({ onSendMessage, disabled }: ChatInputProps) {
     }, 0);
   }, [message, cursorPosition, insertMention, setShowMentionSuggestions]);
 
+  const handleSend = useCallback(() => {
+    if (!message.trim() || disabled) return;
+    
+    const mentions = parseMentions(message);
+    onSendMessage(message, mentions);
+    setMessage("");
+    setShowMentionSuggestions(false);
+  }, [message, disabled, parseMentions, onSendMessage, setShowMentionSuggestions]);
+
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    // Handle mention suggestions navigation
+    if (showMentionSuggestions && filteredAgents.length > 0) {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setSelectedAgentIndex(prev => 
+          prev < filteredAgents.length - 1 ? prev + 1 : 0
+        );
+        return;
+      }
+      
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setSelectedAgentIndex(prev => 
+          prev > 0 ? prev - 1 : filteredAgents.length - 1
+        );
+        return;
+      }
+      
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        const selectedAgent = filteredAgents[selectedAgentIndex];
+        if (selectedAgent) {
+          handleMentionSelect(selectedAgent.name);
+        }
+        return;
+      }
+      
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        setShowMentionSuggestions(false);
+        return;
+      }
+    }
+    
+    // Normal message sending
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  }, [handleSend, showMentionSuggestions, filteredAgents, selectedAgentIndex, handleMentionSelect, setShowMentionSuggestions]);
+
   return (
     <div className="border-t border-gray-200 bg-white px-4 py-4 sm:px-6">
       {/* Mention suggestions */}
@@ -82,16 +132,24 @@ export function ChatInput({ onSendMessage, disabled }: ChatInputProps) {
             Mention Agent
           </div>
           
-          {filteredAgents.map((agent) => (
+          {filteredAgents.map((agent, index) => (
             <button
               key={agent.id}
               onClick={() => handleMentionSelect(agent.name)}
-              className="w-full flex items-center space-x-3 px-3 py-2 hover:bg-gray-50 transition-colors"
+              className={`w-full flex items-center space-x-3 px-3 py-2 transition-colors ${
+                index === selectedAgentIndex 
+                  ? 'bg-blue-50 border-l-2 border-blue-500' 
+                  : 'hover:bg-gray-50'
+              }`}
             >
               <div className={`w-6 h-6 bg-gradient-to-br ${agent.color} rounded-full flex items-center justify-center`}>
-                <span className="text-white text-xs font-semibold">{agent.avatar}</span>
+                <span className="text-white text-xs font-semibold">{getAvatarEmoji(agent.avatar)}</span>
               </div>
-              <span className="text-sm font-medium text-gray-900">@{agent.name}</span>
+              <span className={`text-sm font-medium ${
+                index === selectedAgentIndex ? 'text-blue-900' : 'text-gray-900'
+              }`}>
+                @{agent.name}
+              </span>
             </button>
           ))}
         </div>
@@ -141,7 +199,12 @@ export function ChatInput({ onSendMessage, disabled }: ChatInputProps) {
       <div className="flex items-center justify-between mt-2 px-1">
         <div className="flex items-center space-x-4 text-xs text-gray-500">
           <span>{agents.length} agents available</span>
-          <span className="hidden sm:inline">Press Enter to send • Shift+Enter for new line</span>
+          <span className="hidden sm:inline">
+            {showMentionSuggestions 
+              ? "↑↓ to navigate • Enter to select • Esc to close"
+              : "Press Enter to send • Shift+Enter for new line"
+            }
+          </span>
         </div>
         <span className="text-xs text-gray-400">{message.length}/2000</span>
       </div>

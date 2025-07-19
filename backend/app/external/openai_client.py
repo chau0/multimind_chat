@@ -54,3 +54,27 @@ async def get_openai_response_async(prompt: str) -> str:
     except Exception as e:
         logger.error(f"Azure OpenAI API error: {str(e)}")
         return f"I apologize, but I'm experiencing technical difficulties. Please try again later."
+
+async def get_openai_response_with_messages_async(messages: list) -> str:
+    """Async Azure OpenAI response with proper message format for better conversation handling."""
+    try:
+        client = openai.AsyncAzureOpenAI(
+            api_version=API_VERSION,
+            azure_endpoint=AZURE_ENDPOINT,
+            api_key=settings.azure_openai_api_key,
+        )
+        
+        response = await client.chat.completions.create(
+            model=DEPLOYMENT_NAME,
+            messages=messages,
+            max_tokens=500,  # Increased for more detailed responses
+            temperature=0.8,  # Slightly higher for more personality
+            presence_penalty=0.1,  # Encourage diverse responses
+            frequency_penalty=0.1   # Reduce repetition
+        )
+        
+        return response.choices[0].message.content.strip()
+        
+    except Exception as e:
+        logger.error(f"Azure OpenAI API error: {str(e)}")
+        return f"I apologize, but I'm experiencing technical difficulties. Please try again later."

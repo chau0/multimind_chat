@@ -4,9 +4,9 @@ from sqlalchemy.orm import Session
 from app.services import chat_service
 from app.utils.db import get_db, get_async_db
 from app.schemas.chat import MessageCreate, Message
-import logging
+from app.logging_config import get_logger
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 router = APIRouter()
 
 @router.post("/messages", response_model=dict)
@@ -15,8 +15,14 @@ async def send_message(
     db: AsyncSession = Depends(get_async_db)
 ):
     """Send a message to an agent."""
+    logger.info(f"Received message: '{message.content}' for session: {message.session_id}")
+    logger.info(f"Message agent_id: {message.agent_id}, mentions: {message.mentions}")
+    
     try:
+        # Use the full chat service with LLM integration
         result = await chat_service.create_message_async(db, message)
+        
+        logger.info(f"Message processed successfully for session: {message.session_id}")
         return result
     except ValueError as e:
         logger.warning(f"Validation error: {str(e)}")

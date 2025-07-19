@@ -1,0 +1,5 @@
+2025-07-18 17:06:20 - demo - INFO - Application started successfully
+2025-07-18 17:06:20 - demo - INFO - Health check endpoint accessed
+2025-07-18 17:06:20 - demo - WARNING - Rate limit approaching
+2025-07-18 17:06:20 - demo - ERROR - Database connection failed
+2025-07-18 17:06:20 - demo - INFO - Application shutting down

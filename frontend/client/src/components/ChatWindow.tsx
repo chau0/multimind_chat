@@ -2,8 +2,9 @@ import { useEffect, useRef } from "react";
 import { MessageBubble } from "./MessageBubble";
 import { useChat } from "@/hooks/useChat";
 import { useAgents } from "@/hooks/useAgents";
+import { getAvatarEmoji } from "@/utils/avatarMapping";
 
-export function ChatWindow() {
+export const ChatWindow = () => {
   const { messages, isLoading, typingAgent } = useChat();
   const { data: agents = [] } = useAgents();
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -29,7 +30,7 @@ export function ChatWindow() {
   }
 
   return (
-    <div className="flex-1 overflow-y-auto px-4 py-6 sm:px-6 space-y-4">
+    <div className="flex-1 flex flex-col overflow-y-auto px-4 py-6 sm:px-6 space-y-4">
       {/* Welcome Message */}
       {messages.length === 0 && (
         <div className="flex items-start space-x-3">
@@ -66,12 +67,12 @@ export function ChatWindow() {
       {typingAgent && (
         <div className="flex items-start space-x-3">
           <div className={`w-10 h-10 bg-gradient-to-br ${typingAgent.color} rounded-full flex items-center justify-center flex-shrink-0`}>
-            <span className="text-white text-sm font-semibold">{typingAgent.avatar}</span>
+            <span className="text-white text-sm font-semibold">{getAvatarEmoji(typingAgent.avatar)}</span>
           </div>
           <div className="flex-1">
             <div className="bg-white rounded-2xl shadow-sm p-4 max-w-md">
               <div className="flex items-center space-x-2 mb-2">
-                <span className="text-sm font-medium text-gray-500">{typingAgent.displayName} is typing</span>
+                <span className="text-sm font-medium text-gray-500">{typingAgent.display_name || typingAgent.name} is typing</span>
                 <div className="flex space-x-1">
                   <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
                   <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
@@ -86,4 +87,4 @@ export function ChatWindow() {
       <div ref={messagesEndRef} />
     </div>
   );
-}
+};

@@ -15,6 +15,9 @@ dependencies = [
     "python-dotenv==1.0.1",
     "openai==1.10.0",
     "httpx==0.26.0",
+    "pydantic-settings>=2.2.1",
+    "aiosqlite>=0.19.0",
+    "pytest-asyncio>=0.23.8",
 ]
 
 [project.optional-dependencies]
@@ -26,6 +29,7 @@ dev = [
     "flake8==7.0.0",
     "mypy==1.8.0",
     "httpx==0.26.0",
+    "aiosqlite==0.19.0",
 ]
 
 [tool.black]
@@ -33,3 +37,16 @@ line-length = 88
 
 [tool.isort]
 profile = "black"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-v --tb=short"
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0.0",
+]
