@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1 import chat, agents, health
 from app.logging_config import init_logging, get_logger
+from app.config import settings
 import os
 
 # Initialize logging first
@@ -17,7 +18,7 @@ app = FastAPI(title="Multimind API", version="1.0.0")
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, replace with specific origins
+    allow_origins=settings.cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -4,23 +4,35 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from app.config import settings
 
+# Determine connection arguments based on database type
+def get_connect_args(database_url: str) -> dict:
+    """Get appropriate connection arguments based on database type."""
+    if database_url.startswith("postgresql"):
+        # PostgreSQL connection args
+        return {}
+    elif database_url.startswith("mssql"):
+        # SQL Server connection args
+        return {
+            "timeout": 30,
+            "autocommit": False
+        }
+    else:
+        return {}
+
 # Sync engine for migrations and sync operations
 engine = create_engine(
-    settings.database_url,
+    settings.effective_database_url,
     echo=settings.debug,
     pool_pre_ping=True,
     pool_recycle=300,
-    connect_args={
-        "timeout": 30,
-        "autocommit": False
-    }
+    connect_args=get_connect_args(settings.effective_database_url)
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Async engine for application
 async_engine = create_async_engine(
-    settings.async_database_url,
+    settings.effective_async_database_url,
     echo=settings.debug,
     pool_pre_ping=True,
     pool_recycle=300

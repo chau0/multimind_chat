@@ -1,27 +1,52 @@
 import openai
-from openai import AzureOpenAI
+from openai import OpenAI, AzureOpenAI
 import asyncio
 from app.config import settings
 import logging
 
 logger = logging.getLogger(__name__)
 
-# Azure OpenAI configuration
-AZURE_ENDPOINT = settings.azure_openai_endpoint  # e.g., "https://your-resource.cognitiveservices.azure.com/"
-API_VERSION = "2024-12-01-preview"
-DEPLOYMENT_NAME = settings.azure_openai_deployment  # e.g., "gpt-4" or "gpt-3.5-turbo"
+def get_openai_client():
+    """Get the appropriate OpenAI client based on configuration."""
+    if settings.is_using_azure_openai:
+        return AzureOpenAI(
+            api_key=settings.azure_openai_api_key,
+            api_version=settings.azure_openai_api_version,
+            azure_endpoint=settings.azure_openai_endpoint
+        )
+    else:
+        return OpenAI(
+            api_key=settings.effective_openai_api_key
+        )
+
+def get_async_openai_client():
+    """Get the appropriate async OpenAI client based on configuration."""
+    if settings.is_using_azure_openai:
+        return openai.AsyncAzureOpenAI(
+            api_key=settings.azure_openai_api_key,
+            api_version=settings.azure_openai_api_version,
+            azure_endpoint=settings.azure_openai_endpoint
+        )
+    else:
+        return openai.AsyncOpenAI(
+            api_key=settings.effective_openai_api_key
+        )
+
+def get_model_name():
+    """Get the appropriate model name based on configuration."""
+    if settings.is_using_azure_openai:
+        return settings.azure_openai_deployment
+    else:
+        return "gpt-4"  # Default to GPT-4 for standard OpenAI
 
 def get_openai_response(prompt: str) -> str:
-    """Sync Azure OpenAI response for backward compatibility."""
+    """Sync OpenAI response for backward compatibility."""
     try:
-        client = AzureOpenAI(
-            api_version=API_VERSION,
-            azure_endpoint=AZURE_ENDPOINT,
-            api_key=settings.azure_openai_api_key,
-        )
+        client = get_openai_client()
+        model_name = get_model_name()
         
         response = client.chat.completions.create(
-            model=DEPLOYMENT_NAME,
+            model=model_name,
             messages=[{"role": "user", "content": prompt}],
             max_tokens=150,
             temperature=0.7
@@ -30,20 +55,17 @@ def get_openai_response(prompt: str) -> str:
         return response.choices[0].message.content.strip()
         
     except Exception as e:
-        logger.error(f"Azure OpenAI API error: {str(e)}")
+        logger.error(f"OpenAI API error: {str(e)}")
         return f"I apologize, but I'm experiencing technical difficulties. Please try again later."
 
 async def get_openai_response_async(prompt: str) -> str:
-    """Async Azure OpenAI response using newer API."""
+    """Async OpenAI response using newer API."""
     try:
-        client = openai.AsyncAzureOpenAI(
-            api_version=API_VERSION,
-            azure_endpoint=AZURE_ENDPOINT,
-            api_key=settings.azure_openai_api_key,
-        )
+        client = get_async_openai_client()
+        model_name = get_model_name()
         
         response = await client.chat.completions.create(
-            model=DEPLOYMENT_NAME,
+            model=model_name,
             messages=[{"role": "user", "content": prompt}],
             max_tokens=150,
             temperature=0.7
@@ -52,20 +74,17 @@ async def get_openai_response_async(prompt: str) -> str:
         return response.choices[0].message.content.strip()
         
     except Exception as e:
-        logger.error(f"Azure OpenAI API error: {str(e)}")
+        logger.error(f"OpenAI API error: {str(e)}")
         return f"I apologize, but I'm experiencing technical difficulties. Please try again later."
 
 async def get_openai_response_with_messages_async(messages: list) -> str:
-    """Async Azure OpenAI response with proper message format for better conversation handling."""
+    """Async OpenAI response with proper message format for better conversation handling."""
     try:
-        client = openai.AsyncAzureOpenAI(
-            api_version=API_VERSION,
-            azure_endpoint=AZURE_ENDPOINT,
-            api_key=settings.azure_openai_api_key,
-        )
+        client = get_async_openai_client()
+        model_name = get_model_name()
         
         response = await client.chat.completions.create(
-            model=DEPLOYMENT_NAME,
+            model=model_name,
             messages=messages,
             max_tokens=500,  # Increased for more detailed responses
             temperature=0.8,  # Slightly higher for more personality
@@ -76,5 +95,5 @@ async def get_openai_response_with_messages_async(messages: list) -> str:
         return response.choices[0].message.content.strip()
         
     except Exception as e:
-        logger.error(f"Azure OpenAI API error: {str(e)}")
+        logger.error(f"OpenAI API error: {str(e)}")
         return f"I apologize, but I'm experiencing technical difficulties. Please try again later."
