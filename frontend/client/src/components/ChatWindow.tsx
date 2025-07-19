@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { MessageBubble } from "./MessageBubble";
 import { useChat } from "@/hooks/useChat";
 import { useAgents } from "@/hooks/useAgents";
+import { getAvatarEmoji } from "@/utils/avatarMapping";
 
 export const ChatWindow = () => {
   const { messages, isLoading, typingAgent } = useChat();
@@ -66,12 +67,12 @@ export const ChatWindow = () => {
       {typingAgent && (
         <div className="flex items-start space-x-3">
           <div className={`w-10 h-10 bg-gradient-to-br ${typingAgent.color} rounded-full flex items-center justify-center flex-shrink-0`}>
-            <span className="text-white text-sm font-semibold">{typingAgent.avatar}</span>
+            <span className="text-white text-sm font-semibold">{getAvatarEmoji(typingAgent.avatar)}</span>
           </div>
           <div className="flex-1">
             <div className="bg-white rounded-2xl shadow-sm p-4 max-w-md">
               <div className="flex items-center space-x-2 mb-2">
-                <span className="text-sm font-medium text-gray-500">{typingAgent.displayName || typingAgent.name} is typing</span>
+                <span className="text-sm font-medium text-gray-500">{typingAgent.display_name || typingAgent.name} is typing</span>
                 <div className="flex space-x-1">
                   <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
                   <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>

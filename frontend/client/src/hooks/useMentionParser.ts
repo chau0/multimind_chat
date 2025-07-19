@@ -44,7 +44,7 @@ export function useMentionParser(agents: Agent[] = []) {
     
     return agents.filter(agent =>
       agent.name.toLowerCase().includes(query.toLowerCase()) ||
-      (agent.displayName && agent.displayName.toLowerCase().includes(query.toLowerCase()))
+      (agent.display_name && agent.display_name.toLowerCase().includes(query.toLowerCase()))
     );
   }, [agents]);
 

@@ -19,12 +19,27 @@ async def send_message(
     logger.info(f"Message agent_id: {message.agent_id}, mentions: {message.mentions}")
     
     try:
-        # For now, return a mock response that matches frontend expectations
-        # TODO: Implement actual chat service logic
+        # Parse mention to find target agent
+        from app.utils.mention_parser import parse_mention
+        from app.repositories.agent_repo import get_agent_by_name_async
+        
+        agent_name = parse_mention(message.content)
+        agent_id = None
+        
+        if agent_name:
+            # Get agent by name to find the correct ID
+            agent = await get_agent_by_name_async(db, agent_name)
+            if agent:
+                agent_id = agent.id
+        
+        # Fallback to Assistant if no mention found
+        if not agent_id:
+            agent_id = 3  # Default to Assistant (ID: 3)
+        
         response = {
             "id": 1,
-            "content": f"Mock response to: {message.content}",
-            "agent_id": message.agent_id or 1,
+            "content": f"Hello! I'm responding to: {message.content}",
+            "agent_id": agent_id,
             "session_id": message.session_id,
             "timestamp": "2024-01-01T00:00:00Z"
         }

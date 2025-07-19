@@ -7,7 +7,7 @@ import type { Agent } from "@/types";
 
 export default function ChatPage() {
   const [selectedAgent, setSelectedAgent] = useState<Agent>();
-  const { sendMessage, isSending } = useChat();
+  const { sendMessage, isSending, shouldFocusInput } = useChat();
 
   const handleSendMessage = async (content: string, mentions: string[]) => {
     await sendMessage(content, mentions);
@@ -36,6 +36,7 @@ export default function ChatPage() {
         <ChatInput 
           onSendMessage={handleSendMessage}
           disabled={isSending}
+          shouldFocus={shouldFocusInput}
         />
       </main>
     </div>

@@ -5,6 +5,7 @@ import type { Message, Agent, SendMessageRequest } from "@/types";
 
 export function useChat(sessionId: string = "default") {
   const [typingAgent, setTypingAgent] = useState<Agent | null>(null);
+  const [shouldFocusInput, setShouldFocusInput] = useState(false);
   const queryClient = useQueryClient();
 
   const messagesQuery = useQuery({
@@ -49,6 +50,9 @@ export function useChat(sessionId: string = "default") {
         return [...withoutOptimistic, data.userMessage, ...data.responses];
       });
       setTypingAgent(null);
+      // Trigger input focus after receiving response
+      setShouldFocusInput(true);
+      setTimeout(() => setShouldFocusInput(false), 100);
     },
     onError: (error, variables, context) => {
       // Rollback on error
@@ -89,6 +93,7 @@ export function useChat(sessionId: string = "default") {
     isSending: sendMessageMutation.isPending,
     typingAgent,
     sendMessage,
+    shouldFocusInput,
     error: messagesQuery.error || sendMessageMutation.error,
   };
 }

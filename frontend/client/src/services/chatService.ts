@@ -26,16 +26,17 @@ export const chatService = {
     const result = await response.json();
     
     // Transform the backend response to match frontend expected format
+    const baseId = Date.now();
     return {
       userMessage: {
-        id: result.id || Date.now(),
+        id: baseId,
         content: messageData.content,
         isUser: true,
         timestamp: new Date(),
         mentions: messageData.mentions || []
       },
       responses: [{
-        id: result.id + 1 || Date.now() + 1,
+        id: baseId + 1,
         content: result.content,
         isUser: false,
         agentId: result.agent_id,

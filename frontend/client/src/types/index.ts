@@ -10,11 +10,11 @@ export interface Message {
 export interface Agent {
   id: number;
   name: string;
-  displayName: string;
+  display_name: string;  // Match backend snake_case
   description: string;
   color: string;
   avatar: string;
-  isActive: boolean;
+  isActive?: boolean;  // Make optional since backend doesn't return it
 }
 
 export interface ChatState {

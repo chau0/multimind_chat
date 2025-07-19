@@ -9,6 +9,9 @@ class Agent(Base):
     name = Column(String(255), unique=True, index=True)  # Limited length for indexing
     description = Column(String(500))  # Limited length for better performance
     system_prompt = Column(Text)  # Can be unlimited for system prompts
+    display_name = Column(String(255))  # Display name for UI
+    avatar = Column(String(10))  # Emoji or short avatar string
+    color = Column(String(100))  # CSS color classes
 
 class ChatSession(Base):
     __tablename__ = "chat_sessions"
