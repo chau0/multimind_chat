@@ -21,7 +21,8 @@ from app.models import chat              # noqa: F401  (imported for autogenerat
 
 # ── Alembic configuration ─────────────────────────────────────────────────────
 config = context.config
-config.set_main_option("sqlalchemy.url", settings.effective_database_url)
+# Don't set the URL in config to avoid ConfigParser interpolation issues
+# We'll use the URL directly in the migration functions
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
@@ -38,6 +39,8 @@ def run_migrations_offline() -> None:
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
+        compare_type=True,
+        compare_server_default=True,
     )
 
     with context.begin_transaction():
@@ -46,17 +49,32 @@ def run_migrations_offline() -> None:
 
 def run_migrations_online() -> None:
     """Run migrations in 'online' mode (connects to DB and executes)."""
-    connectable = engine_from_config(
-        config.get_section(config.config_ini_section) or {},  # Fallback to empty dict
-        prefix="sqlalchemy.",
-        poolclass=pool.NullPool,
-    )
+    # Create engine directly from settings to avoid ConfigParser interpolation issues
+    from sqlalchemy import create_engine
+    from sqlalchemy.exc import OperationalError
+    
+    try:
+        connectable = create_engine(
+            settings.effective_database_url,
+            poolclass=pool.NullPool,
+        )
 
-    with connectable.connect() as connection:
-        context.configure(connection=connection, target_metadata=target_metadata)
+        with connectable.connect() as connection:
+            context.configure(
+                connection=connection, 
+                target_metadata=target_metadata,
+                compare_type=True,
+                compare_server_default=True,
+            )
 
-        with context.begin_transaction():
-            context.run_migrations()
+            with context.begin_transaction():
+                context.run_migrations()
+                
+    except OperationalError as e:
+        print(f"Database connection failed: {e}")
+        print("Cannot generate autogenerate migration without database connection.")
+        print("Please ensure database connectivity or run a manual migration.")
+        raise SystemExit(1)
 
 
 # ── Entrypoint ────────────────────────────────────────────────────────────────

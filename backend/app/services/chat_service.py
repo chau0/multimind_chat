@@ -59,6 +59,7 @@ async def create_message_async(db: AsyncSession, message: MessageCreate) -> dict
             "id": response_message.id,
             "content": response_content,
             "agent_id": agent_id,
+            "agent_name": agent_name_str,
             "session_id": message.session_id,
             "timestamp": response_message.created_at.isoformat() if hasattr(response_message, 'created_at') else None
         }

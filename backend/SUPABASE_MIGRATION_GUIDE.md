@@ -24,8 +24,12 @@ This guide will help you migrate the Multimind backend from Azure SQL to Supabas
 
 2. Edit `.env` and update these values:
    ```bash
-   # Replace with your actual Supabase database URL
-   DATABASE_URL=postgresql://postgres.your-ref:your-password@aws-0-us-east-1.pooler.supabase.com:6543/postgres
+   # Method 1: Using Supabase Client (Recommended)
+   SUPABASE_URL=https://your-project-ref.supabase.co
+   SUPABASE_KEY=your-anon-public-key-here
+   
+   # Method 2: Direct PostgreSQL URL (Alternative)
+   # DATABASE_URL=postgresql://postgres.your-ref:your-password@aws-0-us-east-1.pooler.supabase.com:6543/postgres
    
    # Replace with your OpenAI API key
    OPENAI_API_KEY=sk-your-openai-api-key-here
@@ -35,6 +39,15 @@ This guide will help you migrate the Multimind backend from Azure SQL to Supabas
    DEBUG=true
    CORS_ORIGINS=["http://localhost:3000", "http://localhost:5173"]
    ```
+
+### Getting Your Supabase Credentials
+
+**For Method 1 (Recommended):**
+- **SUPABASE_URL**: Found in Project Settings → API → Project URL
+- **SUPABASE_KEY**: Found in Project Settings → API → Project API keys → `anon` `public` key
+
+**For Method 2 (Direct PostgreSQL):**
+- **DATABASE_URL**: Found in Project Settings → Database → Connection string → URI
 
 ## Step 3: Install Dependencies
 

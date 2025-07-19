@@ -6,6 +6,10 @@ class Settings(BaseSettings):
     # Database configuration - supports both PostgreSQL (Supabase) and Azure SQL
     database_url: Optional[str] = None
     
+    # Supabase configuration
+    supabase_url: Optional[str] = None
+    supabase_key: Optional[str] = None
+    
     # Legacy Azure SQL Database configuration (for backward compatibility)
     azure_sql_server: Optional[str] = None
     azure_sql_database: Optional[str] = None
@@ -40,12 +44,20 @@ class Settings(BaseSettings):
         if self.database_url:
             return self.database_url
         
+        # Check for Supabase configuration
+        if self.supabase_url and self.supabase_key:
+            # Extract database URL from Supabase URL
+            # Supabase URL format: https://your-project.supabase.co
+            # Database URL format: postgresql://postgres:[password]@db.your-project.supabase.co:5432/postgres
+            project_ref = self.supabase_url.replace('https://', '').replace('.supabase.co', '')
+            return f"postgresql://postgres:{self.supabase_key}@db.{project_ref}.supabase.co:5432/postgres"
+        
         # Fallback to Azure SQL configuration
         if all([self.azure_sql_server, self.azure_sql_database, 
                 self.azure_sql_username, self.azure_sql_password]):
             return self._build_azure_sql_url()
         
-        raise ValueError("No database configuration found. Set DATABASE_URL or Azure SQL config.")
+        raise ValueError("No database configuration found. Set DATABASE_URL, Supabase config, or Azure SQL config.")
     
     @property
     def effective_async_database_url(self) -> str:
@@ -56,12 +68,18 @@ class Settings(BaseSettings):
                 return self.database_url.replace("postgresql://", "postgresql+asyncpg://", 1)
             return self.database_url
         
+        # Check for Supabase configuration
+        if self.supabase_url and self.supabase_key:
+            # Extract database URL from Supabase URL and use asyncpg
+            project_ref = self.supabase_url.replace('https://', '').replace('.supabase.co', '')
+            return f"postgresql+asyncpg://postgres:{self.supabase_key}@db.{project_ref}.supabase.co:5432/postgres"
+        
         # Fallback to Azure SQL async configuration
         if all([self.azure_sql_server, self.azure_sql_database, 
                 self.azure_sql_username, self.azure_sql_password]):
             return self._build_azure_sql_async_url()
         
-        raise ValueError("No database configuration found. Set DATABASE_URL or Azure SQL config.")
+        raise ValueError("No database configuration found. Set DATABASE_URL, Supabase config, or Azure SQL config.")
     
     def _build_azure_sql_url(self) -> str:
         """Build Azure SQL Database connection string."""
