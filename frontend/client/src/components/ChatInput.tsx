@@ -43,13 +43,6 @@ export function ChatInput({ onSendMessage, disabled }: ChatInputProps) {
     handleInputChange(value, cursor);
   }, [handleInputChange]);
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  }, []);
-
   const handleSend = useCallback(() => {
     if (!message.trim() || disabled) return;
     
@@ -58,6 +51,13 @@ export function ChatInput({ onSendMessage, disabled }: ChatInputProps) {
     setMessage("");
     setShowMentionSuggestions(false);
   }, [message, disabled, parseMentions, onSendMessage, setShowMentionSuggestions]);
+
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  }, [handleSend]);
 
   const handleMentionSelect = useCallback((agentName: string) => {
     const { newValue, newCursorPosition } = insertMention(message, cursorPosition, agentName);

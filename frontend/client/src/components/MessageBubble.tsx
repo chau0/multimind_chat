@@ -7,6 +7,7 @@ interface MessageBubbleProps {
 }
 
 export function MessageBubble({ message, agent }: MessageBubbleProps) {
+  console.log('MessageBubble props:', { message, agent }); // Debugging line
   const timestamp = format(new Date(message.timestamp), "h:mm a");
 
   if (message.isUser) {

@@ -22,9 +22,12 @@ export function useChat(sessionId: string = "default") {
       // Snapshot previous value
       const previousMessages = queryClient.getQueryData<Message[]>([`/api/v1/chat/sessions/${sessionId}/messages`]);
 
+      // Create a unique temporary ID for the optimistic message (negative to avoid conflicts)
+      const optimisticId = -Date.now();
+      
       // Optimistically update with user message
       const optimisticMessage: Message = {
-        id: Date.now(), // Temporary ID
+        id: optimisticId, // Unique temporary ID (negative number)
         content: messageData.content,
         isUser: true,
         timestamp: new Date(),
@@ -36,13 +39,13 @@ export function useChat(sessionId: string = "default") {
         optimisticMessage,
       ]);
 
-      return { previousMessages };
+      return { previousMessages, optimisticId };
     },
-    onSuccess: (data) => {
+    onSuccess: (data, variables, context) => {
       // Update with real messages from server
       queryClient.setQueryData<Message[]>([`/api/v1/chat/sessions/${sessionId}/messages`], (old = []) => {
-        // Remove the optimistic message and add real messages
-        const withoutOptimistic = old.filter(msg => msg.id !== data.userMessage.id || msg.id < 1000000);
+        // Remove the optimistic message using its temporary ID
+        const withoutOptimistic = old.filter(msg => msg.id !== context?.optimisticId);
         return [...withoutOptimistic, data.userMessage, ...data.responses];
       });
       setTypingAgent(null);

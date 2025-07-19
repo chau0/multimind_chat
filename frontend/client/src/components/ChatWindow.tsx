@@ -3,7 +3,7 @@ import { MessageBubble } from "./MessageBubble";
 import { useChat } from "@/hooks/useChat";
 import { useAgents } from "@/hooks/useAgents";
 
-export function ChatWindow() {
+export const ChatWindow = () => {
   const { messages, isLoading, typingAgent } = useChat();
   const { data: agents = [] } = useAgents();
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -29,7 +29,7 @@ export function ChatWindow() {
   }
 
   return (
-    <div className="flex-1 overflow-y-auto px-4 py-6 sm:px-6 space-y-4">
+    <div className="flex-1 flex flex-col overflow-y-auto px-4 py-6 sm:px-6 space-y-4">
       {/* Welcome Message */}
       {messages.length === 0 && (
         <div className="flex items-start space-x-3">
@@ -86,4 +86,4 @@ export function ChatWindow() {
       <div ref={messagesEndRef} />
     </div>
   );
-}
+};
