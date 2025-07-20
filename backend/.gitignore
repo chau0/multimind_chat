@@ -304,6 +304,7 @@ Thumbs.db
 # Package manager files (using uv)
 .uv/
 uv.lock
+temp
 
 # Alembic
 # Keep versions/ directory but ignore any local migration files if needed

@@ -6,16 +6,16 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install
+RUN npm ci --only=production
 
 # Copy the rest of the application
 COPY . .
 
-# Build the application
+# Build the application for production
 RUN npm run build
 
-# Expose the port
-EXPOSE 3000
+# Use PORT environment variable from hosting platform, fallback to 5000
+EXPOSE ${PORT:-5000}
 
 # Start the application
 CMD ["npm", "start"]

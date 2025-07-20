@@ -8,30 +8,50 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - AZURE_SQL_SERVER=${AZURE_SQL_SERVER}
-      - AZURE_SQL_DATABASE=${AZURE_SQL_DATABASE}
-      - AZURE_SQL_USERNAME=${AZURE_SQL_USERNAME}
-      - AZURE_SQL_PASSWORD=${AZURE_SQL_PASSWORD}
-      - AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT}
-      - AZURE_OPENAI_API_KEY=${AZURE_OPENAI_API_KEY}
-      - AZURE_OPENAI_DEPLOYMENT=${AZURE_OPENAI_DEPLOYMENT}
+      # Database Configuration (supports both Supabase and Azure SQL)
+      - DATABASE_URL=${DATABASE_URL:-}
+      - SUPABASE_URL=${SUPABASE_URL:-}
+      - SUPABASE_KEY=${SUPABASE_KEY:-}
+      # Legacy Azure SQL support
+      - AZURE_SQL_SERVER=${AZURE_SQL_SERVER:-}
+      - AZURE_SQL_DATABASE=${AZURE_SQL_DATABASE:-}
+      - AZURE_SQL_USERNAME=${AZURE_SQL_USERNAME:-}
+      - AZURE_SQL_PASSWORD=${AZURE_SQL_PASSWORD:-}
+      # OpenAI Configuration (supports both standard and Azure OpenAI)
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT:-}
+      - AZURE_OPENAI_API_KEY=${AZURE_OPENAI_API_KEY:-}
+      - AZURE_OPENAI_DEPLOYMENT=${AZURE_OPENAI_DEPLOYMENT:-}
+      # Application Configuration
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+      - DEBUG=${DEBUG:-true}
+      - CORS_ORIGINS=${CORS_ORIGINS:-["http://localhost:3000","http://localhost:5173"]}
     volumes:
       - ./backend:/app
     networks:
       - multimind-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "5000:5000"
     environment:
       - BACKEND_API_URL=http://backend:8000
+      - VITE_API_BASE_URL=http://localhost:8000/api
+      - NODE_ENV=${NODE_ENV:-development}
+      - PORT=5000
     volumes:
       - ./frontend:/app
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     networks:
       - multimind-network
 
