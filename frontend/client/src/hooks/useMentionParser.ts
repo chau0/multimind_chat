@@ -9,17 +9,17 @@ export function useMentionParser(agents: Agent[] = []) {
     const mentionRegex = /@(\w+)/g;
     const mentions = [];
     let match;
-    
+
     while ((match = mentionRegex.exec(text)) !== null) {
       const agentName = match[1];
-      const agent = agents.find(a => 
+      const agent = agents.find(a =>
         a.name.toLowerCase() === agentName.toLowerCase()
       );
       if (agent) {
         mentions.push(agent.name);
       }
     }
-    
+
     return [...new Set(mentions)];
   }, [agents]);
 
@@ -27,7 +27,7 @@ export function useMentionParser(agents: Agent[] = []) {
     const mentionRegex = /@(\w+)/g;
     const matches = [];
     let match;
-    
+
     while ((match = mentionRegex.exec(text)) !== null) {
       matches.push({
         start: match.index,
@@ -35,13 +35,13 @@ export function useMentionParser(agents: Agent[] = []) {
         agent: match[1],
       });
     }
-    
+
     return matches;
   }, []);
 
   const getFilteredAgents = useCallback((query: string) => {
     if (!query) return agents;
-    
+
     return agents.filter(agent =>
       agent.name.toLowerCase().includes(query.toLowerCase()) ||
       (agent.display_name && agent.display_name.toLowerCase().includes(query.toLowerCase()))
@@ -52,7 +52,7 @@ export function useMentionParser(agents: Agent[] = []) {
     // Check if we're typing after an @
     const beforeCursor = value.substring(0, cursorPosition);
     const lastAtIndex = beforeCursor.lastIndexOf('@');
-    
+
     if (lastAtIndex !== -1) {
       const afterAt = beforeCursor.substring(lastAtIndex + 1);
       // Check if it's a valid mention context (no spaces)
@@ -62,7 +62,7 @@ export function useMentionParser(agents: Agent[] = []) {
         return;
       }
     }
-    
+
     setShowMentionSuggestions(false);
     setMentionQuery("");
   }, []);
@@ -75,15 +75,15 @@ export function useMentionParser(agents: Agent[] = []) {
     const beforeCursor = currentValue.substring(0, cursorPosition);
     const afterCursor = currentValue.substring(cursorPosition);
     const lastAtIndex = beforeCursor.lastIndexOf('@');
-    
+
     if (lastAtIndex !== -1) {
       const beforeAt = beforeCursor.substring(0, lastAtIndex);
       const newValue = `${beforeAt}@${agentName} ${afterCursor}`;
       const newCursorPosition = lastAtIndex + agentName.length + 2;
-      
+
       return { newValue, newCursorPosition };
     }
-    
+
     return { newValue: currentValue, newCursorPosition: cursorPosition };
   }, []);
 

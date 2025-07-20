@@ -41,27 +41,27 @@ describe('App', () => {
 
   it('renders without crashing', () => {
     render(<App />)
-    
+
     expect(screen.getByTestId('switch')).toBeInTheDocument()
   })
 
   it('provides QueryClient to children', () => {
     render(<App />)
-    
+
     // The app should render without throwing errors related to missing QueryClient
     expect(screen.getByTestId('switch')).toBeInTheDocument()
   })
 
   it('provides TooltipProvider to children', () => {
     render(<App />)
-    
+
     // The app should render without throwing errors related to missing TooltipProvider
     expect(screen.getByTestId('switch')).toBeInTheDocument()
   })
 
   it('includes Toaster component', () => {
     render(<App />)
-    
+
     // Toaster should be rendered (though it might not be visible)
     expect(screen.getByTestId('switch')).toBeInTheDocument()
   })

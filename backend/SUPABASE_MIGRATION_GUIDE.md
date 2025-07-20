@@ -27,13 +27,13 @@ This guide will help you migrate the Multimind backend from Azure SQL to Supabas
    # Method 1: Using Supabase Client (Recommended)
    SUPABASE_URL=https://your-project-ref.supabase.co
    SUPABASE_KEY=your-anon-public-key-here
-   
+
    # Method 2: Direct PostgreSQL URL (Alternative)
    # DATABASE_URL=postgresql://postgres.your-ref:your-password@aws-0-us-east-1.pooler.supabase.com:6543/postgres
-   
+
    # Replace with your OpenAI API key
    OPENAI_API_KEY=sk-your-openai-api-key-here
-   
+
    # Application settings
    ENVIRONMENT=development
    DEBUG=true

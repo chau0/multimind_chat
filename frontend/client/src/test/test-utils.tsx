@@ -17,7 +17,7 @@ interface AllTheProvidersProps {
 
 const AllTheProviders = ({ children }: AllTheProvidersProps) => {
   const queryClient = createTestQueryClient()
-  
+
   return (
     <QueryClientProvider client={queryClient}>
       {children}

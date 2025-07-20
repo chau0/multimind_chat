@@ -15,7 +15,7 @@ export function ChatInput({ onSendMessage, disabled, shouldFocus }: ChatInputPro
   const [cursorPosition, setCursorPosition] = useState(0);
   const [selectedAgentIndex, setSelectedAgentIndex] = useState(0);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  
+
   const { data: agents = [] } = useAgents();
   const {
     parseMentions,
@@ -52,7 +52,7 @@ export function ChatInput({ onSendMessage, disabled, shouldFocus }: ChatInputPro
   const handleInputChangeInternal = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
     const cursor = e.target.selectionStart;
-    
+
     setMessage(value);
     setCursorPosition(cursor);
     handleInputChange(value, cursor);
@@ -62,7 +62,7 @@ export function ChatInput({ onSendMessage, disabled, shouldFocus }: ChatInputPro
     const { newValue, newCursorPosition } = insertMention(message, cursorPosition, agentName);
     setMessage(newValue);
     setShowMentionSuggestions(false);
-    
+
     // Focus textarea and set cursor position
     setTimeout(() => {
       if (textareaRef.current) {
@@ -74,7 +74,7 @@ export function ChatInput({ onSendMessage, disabled, shouldFocus }: ChatInputPro
 
   const handleSend = useCallback(() => {
     if (!message.trim() || disabled) return;
-    
+
     const mentions = parseMentions(message);
     onSendMessage(message, mentions);
     setMessage("");
@@ -86,20 +86,20 @@ export function ChatInput({ onSendMessage, disabled, shouldFocus }: ChatInputPro
     if (showMentionSuggestions && filteredAgents.length > 0) {
       if (e.key === 'ArrowDown') {
         e.preventDefault();
-        setSelectedAgentIndex(prev => 
+        setSelectedAgentIndex(prev =>
           prev < filteredAgents.length - 1 ? prev + 1 : 0
         );
         return;
       }
-      
+
       if (e.key === 'ArrowUp') {
         e.preventDefault();
-        setSelectedAgentIndex(prev => 
+        setSelectedAgentIndex(prev =>
           prev > 0 ? prev - 1 : filteredAgents.length - 1
         );
         return;
       }
-      
+
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
         const selectedAgent = filteredAgents[selectedAgentIndex];
@@ -108,14 +108,14 @@ export function ChatInput({ onSendMessage, disabled, shouldFocus }: ChatInputPro
         }
         return;
       }
-      
+
       if (e.key === 'Escape') {
         e.preventDefault();
         setShowMentionSuggestions(false);
         return;
       }
     }
-    
+
     // Normal message sending
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -131,14 +131,14 @@ export function ChatInput({ onSendMessage, disabled, shouldFocus }: ChatInputPro
           <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
             Mention Agent
           </div>
-          
+
           {filteredAgents.map((agent, index) => (
             <button
               key={agent.id}
               onClick={() => handleMentionSelect(agent.name)}
               className={`w-full flex items-center space-x-3 px-3 py-2 transition-colors ${
-                index === selectedAgentIndex 
-                  ? 'bg-blue-50 border-l-2 border-blue-500' 
+                index === selectedAgentIndex
+                  ? 'bg-blue-50 border-l-2 border-blue-500'
                   : 'hover:bg-gray-50'
               }`}
             >
@@ -167,17 +167,17 @@ export function ChatInput({ onSendMessage, disabled, shouldFocus }: ChatInputPro
             rows={1}
             disabled={disabled}
           />
-          
+
           {/* Attachment button */}
-          <button 
+          <button
             className="absolute right-12 bottom-3 p-1 text-gray-400 hover:text-gray-600 transition-colors"
             type="button"
           >
             <Paperclip className="w-5 h-5" />
           </button>
-          
+
           {/* Emoji button */}
-          <button 
+          <button
             className="absolute right-3 bottom-3 p-1 text-gray-400 hover:text-gray-600 transition-colors"
             type="button"
           >
@@ -194,13 +194,13 @@ export function ChatInput({ onSendMessage, disabled, shouldFocus }: ChatInputPro
           <Send className="w-5 h-5" />
         </button>
       </div>
-      
+
       {/* Character count and shortcuts */}
       <div className="flex items-center justify-between mt-2 px-1">
         <div className="flex items-center space-x-4 text-xs text-gray-500">
           <span>{agents.length} agents available</span>
           <span className="hidden sm:inline">
-            {showMentionSuggestions 
+            {showMentionSuggestions
               ? "↑↓ to navigate • Enter to select • Esc to close"
               : "Press Enter to send • Shift+Enter for new line"
             }

@@ -181,7 +181,7 @@ When you exceed free limits:
 
 ## 🎉 Success!
 
-Your Multimind application is now deployed and ready for users! 
+Your Multimind application is now deployed and ready for users!
 
 **Next Steps:**
 - Share your app URL with beta testers

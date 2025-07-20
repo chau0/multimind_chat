@@ -20,7 +20,7 @@ def upgrade() -> None:
     # This migration marks the successful migration to PostgreSQL
     # The tables should already exist from previous migrations
     # We only need to ensure PostgreSQL-specific optimizations are in place
-    
+
     # Add any PostgreSQL-specific indexes or optimizations here if needed
     # For now, this is a no-op migration that just marks the transition
     pass

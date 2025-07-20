@@ -17,7 +17,7 @@ def run_command(command, description):
     print(f"\n{'='*60}")
     print(f"🔄 {description}")
     print(f"{'='*60}")
-    
+
     try:
         result = subprocess.run(
             command,
@@ -42,87 +42,87 @@ def main():
     """Main test runner function."""
     print("🧪 Multimind Backend Test Suite")
     print("=" * 60)
-    
+
     # Change to backend directory
     backend_dir = Path(__file__).parent.parent
     os.chdir(backend_dir)
-    
+
     # Set test environment
     os.environ['ENVIRONMENT'] = 'test'
     os.environ['DATABASE_URL'] = 'sqlite:///test.db'
     os.environ['OPENAI_API_KEY'] = 'test-key'
-    
+
     success = True
-    
+
     # 1. Install dependencies
     if not run_command(
         "uv pip install -r requirements/dev.txt",
         "Installing test dependencies"
     ):
         success = False
-    
+
     # 2. Run linting
     print("\n🔍 Code Quality Checks")
-    
+
     # Flake8
     if not run_command(
         "flake8 app/ tests/ --max-line-length=88 --extend-ignore=E203,W503",
         "Running flake8 linting"
     ):
         print("⚠️  Linting issues found, but continuing with tests...")
-    
+
     # Black formatting check
     if not run_command(
         "black --check app/ tests/",
         "Checking code formatting with black"
     ):
         print("⚠️  Formatting issues found, but continuing with tests...")
-    
+
     # isort import sorting check
     if not run_command(
         "isort --check-only app/ tests/",
         "Checking import sorting with isort"
     ):
         print("⚠️  Import sorting issues found, but continuing with tests...")
-    
+
     # 3. Type checking
     if not run_command(
         "mypy app/ --ignore-missing-imports",
         "Running type checking with mypy"
     ):
         print("⚠️  Type checking issues found, but continuing with tests...")
-    
+
     # 4. Run unit tests with coverage
     if not run_command(
         "pytest tests/unit/ -v --cov=app --cov-report=term-missing --cov-report=html --cov-fail-under=80",
         "Running unit tests with coverage"
     ):
         success = False
-    
+
     # 5. Run integration tests
     if not run_command(
         "pytest tests/integration/ -v",
         "Running integration tests"
     ):
         success = False
-    
+
     # 6. Run E2E tests
     if not run_command(
         "pytest tests/e2e/ -v",
         "Running end-to-end tests"
     ):
         success = False
-    
+
     # 7. Security checks (if bandit is available)
     run_command(
         "bandit -r app/ -f json -o bandit-report.json || echo 'Bandit not available'",
         "Running security checks with bandit"
     )
-    
+
     # 8. Generate test report
     print("\n📊 Test Summary")
     print("=" * 60)
-    
+
     if success:
         print("✅ All tests passed!")
         print("\n📈 Coverage report generated in htmlcov/index.html")

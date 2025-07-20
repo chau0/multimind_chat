@@ -21,10 +21,10 @@ export const chatService = {
       content: messageData.content,
       session_id: sessionId
     };
-    
+
     const response = await apiRequest("POST", `${API_BASE_URL}/chat/messages`, payload);
     const result = await response.json();
-    
+
     // Transform the backend response to match frontend expected format
     const baseId = Date.now();
     return {

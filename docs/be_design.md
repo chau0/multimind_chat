@@ -169,7 +169,7 @@ from app.schemas.message import MessageCreate, MessageResponse
 from app.schemas.agent import Agent
 
 class TestChatService:
-    
+
     @pytest.fixture
     def chat_service(self):
         """Create ChatService with mocked dependencies."""
@@ -177,52 +177,52 @@ class TestChatService:
         mock_agent_repo = Mock()
         mock_llm_service = Mock()
         mock_mention_parser = Mock()
-        
+
         return ChatService(
             message_repository=mock_message_repo,
             agent_repository=mock_agent_repo,
             llm_service=mock_llm_service,
             mention_parser=mock_mention_parser
         )
-    
+
     @pytest.mark.asyncio
     async def test_send_message_with_agent_mention(self, chat_service):
         """Test sending message with agent mention triggers agent response."""
         # Given
         message_content = "@ProductManager What's our next milestone?"
         session_id = "test-session-123"
-        
+
         chat_service.mention_parser.extract_mentions.return_value = ["ProductManager"]
         chat_service.agent_repository.get_by_name = AsyncMock(return_value=Mock(id=1, name="ProductManager"))
         chat_service.message_repository.get_session_history = AsyncMock(return_value=[])
         chat_service.llm_service.generate_response = AsyncMock(return_value="Let's prioritize user feedback.")
         chat_service.message_repository.create = AsyncMock()
-        
+
         # When
         result = await chat_service.send_message(
             MessageCreate(content=message_content, session_id=session_id)
         )
-        
+
         # Then
         assert result.agent_name == "ProductManager"
         assert "prioritize user feedback" in result.content
         chat_service.llm_service.generate_response.assert_called_once()
-    
+
     @pytest.mark.asyncio
     async def test_send_message_without_mention_returns_error(self, chat_service):
         """Test sending message without agent mention returns appropriate error."""
         # Given
         message_content = "Hello world"
         session_id = "test-session-123"
-        
+
         chat_service.mention_parser.extract_mentions.return_value = []
-        
+
         # When & Then
         with pytest.raises(ValueError, match="No agent mentioned"):
             await chat_service.send_message(
                 MessageCreate(content=message_content, session_id=session_id)
             )
-    
+
     @pytest.mark.asyncio
     async def test_build_context_includes_message_history(self, chat_service):
         """Test context builder includes previous messages."""
@@ -232,12 +232,12 @@ class TestChatService:
             Mock(content="Previous user message", author="user"),
             Mock(content="Previous agent response", author="Developer")
         ]
-        
+
         chat_service.message_repository.get_session_history = AsyncMock(return_value=mock_messages)
-        
+
         # When
         context = await chat_service._build_context(session_id)
-        
+
         # Then
         assert len(context) == 2
         assert "Previous user message" in str(context)
@@ -252,41 +252,41 @@ import pytest
 from app.services.mention_parser import MentionParser
 
 class TestMentionParser:
-    
+
     @pytest.fixture
     def parser(self):
         return MentionParser()
-    
+
     def test_extract_single_mention(self, parser):
         """Test extracting single agent mention."""
         text = "@ProductManager let's discuss the roadmap"
         mentions = parser.extract_mentions(text)
         assert mentions == ["ProductManager"]
-    
+
     def test_extract_multiple_mentions(self, parser):
         """Test extracting multiple agent mentions."""
         text = "@Developer and @Designer please collaborate on this"
         mentions = parser.extract_mentions(text)
         assert set(mentions) == {"Developer", "Designer"}
-    
+
     def test_extract_no_mentions(self, parser):
         """Test text without mentions returns empty list."""
         text = "This is a regular message without any mentions"
         mentions = parser.extract_mentions(text)
         assert mentions == []
-    
+
     def test_extract_mentions_case_insensitive(self, parser):
         """Test mention extraction is case insensitive."""
         text = "@productmanager and @DEVELOPER"
         mentions = parser.extract_mentions(text)
         assert set(mentions) == {"productmanager", "DEVELOPER"}
-    
+
     def test_extract_mentions_with_special_characters(self, parser):
         """Test mentions with underscores and numbers."""
         text = "@AI_Assistant_2 and @Bot_3 help me"
         mentions = parser.extract_mentions(text)
         assert set(mentions) == {"AI_Assistant_2", "Bot_3"}
-    
+
     def test_validate_mention_format(self, parser):
         """Test mention format validation."""
         assert parser.is_valid_mention("@ValidAgent") == True
@@ -306,12 +306,12 @@ from app.external.llm_factory import LLMProvider
 from app.schemas.agent import Agent
 
 class TestLLMService:
-    
+
     @pytest.fixture
     def llm_service(self):
         mock_provider = Mock()
         return LLMService(provider=mock_provider)
-    
+
     @pytest.mark.asyncio
     async def test_generate_response_with_agent_context(self, llm_service):
         """Test LLM response generation with agent context."""
@@ -323,21 +323,21 @@ class TestLLMService:
         )
         context = ["User: What should we build next?"]
         user_message = "Focus on user retention"
-        
+
         llm_service.provider.generate = AsyncMock(return_value="Let's analyze user churn data first.")
-        
+
         # When
         response = await llm_service.generate_response(agent, context, user_message)
-        
+
         # Then
         assert response == "Let's analyze user churn data first."
         llm_service.provider.generate.assert_called_once()
-        
+
         # Verify system prompt was included
         call_args = llm_service.provider.generate.call_args
         messages = call_args[0][0]
         assert any("strategic product manager" in msg.get("content", "") for msg in messages)
-    
+
     @pytest.mark.asyncio
     async def test_generate_response_handles_provider_error(self, llm_service):
         """Test error handling when LLM provider fails."""
@@ -345,13 +345,13 @@ class TestLLMService:
         agent = Agent(name="TestAgent", system_prompt="Test prompt")
         context = []
         user_message = "Test message"
-        
+
         llm_service.provider.generate = AsyncMock(side_effect=Exception("API Error"))
-        
+
         # When & Then
         with pytest.raises(Exception, match="Failed to generate response"):
             await llm_service.generate_response(agent, context, user_message)
-    
+
     def test_format_messages_for_llm(self, llm_service):
         """Test message formatting for LLM API."""
         # Given
@@ -362,10 +362,10 @@ class TestLLMService:
             "User: How are you?"
         ]
         user_message = "Tell me about yourself"
-        
+
         # When
         formatted = llm_service._format_messages(agent, context, user_message)
-        
+
         # Then
         assert formatted[0]["role"] == "system"
         assert "test agent" in formatted[0]["content"]
@@ -385,7 +385,7 @@ from app.main import app
 from tests.fixtures.database import test_db
 
 class TestChatAPI:
-    
+
     @pytest.mark.asyncio
     async def test_send_message_endpoint(self, test_db):
         """Test POST /api/v1/chat/messages endpoint."""
@@ -395,17 +395,17 @@ class TestChatAPI:
                 "content": "@ProductManager What's our Q4 strategy?",
                 "session_id": "test-session-001"
             }
-            
+
             # When
             response = await client.post("/api/v1/chat/messages", json=payload)
-            
+
             # Then
             assert response.status_code == 200
             data = response.json()
             assert data["agent_name"] == "ProductManager"
             assert "session_id" in data
             assert len(data["content"]) > 0
-    
+
     @pytest.mark.asyncio
     async def test_get_session_history(self, test_db):
         """Test GET /api/v1/chat/sessions/{session_id}/messages endpoint."""
@@ -416,16 +416,16 @@ class TestChatAPI:
                 "session_id": "test-session-002"
             }
             await client.post("/api/v1/chat/messages", json=payload)
-            
+
             # When
             response = await client.get("/api/v1/chat/sessions/test-session-002/messages")
-            
+
             # Then
             assert response.status_code == 200
             data = response.json()
             assert len(data) >= 1
             assert data[0]["content"] == "@Developer Hello"
-    
+
     @pytest.mark.asyncio
     async def test_send_message_invalid_agent(self, test_db):
         """Test sending message with invalid agent mention."""
@@ -435,10 +435,10 @@ class TestChatAPI:
                 "content": "@NonExistentAgent Help me",
                 "session_id": "test-session-003"
             }
-            
+
             # When
             response = await client.post("/api/v1/chat/messages", json=payload)
-            
+
             # Then
             assert response.status_code == 404
             data = response.json()

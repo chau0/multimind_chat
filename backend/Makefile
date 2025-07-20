@@ -11,7 +11,7 @@ dev: install
 	uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 test:
-	uv run pytest -v 
+	uv run pytest -v
 
 lint:
 	uv run flake8 app

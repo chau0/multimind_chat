@@ -52,7 +52,7 @@ def run_migrations_online() -> None:
     # Create engine directly from settings to avoid ConfigParser interpolation issues
     from sqlalchemy import create_engine
     from sqlalchemy.exc import OperationalError
-    
+
     try:
         connectable = create_engine(
             settings.effective_database_url,
@@ -61,7 +61,7 @@ def run_migrations_online() -> None:
 
         with connectable.connect() as connection:
             context.configure(
-                connection=connection, 
+                connection=connection,
                 target_metadata=target_metadata,
                 compare_type=True,
                 compare_server_default=True,
@@ -69,7 +69,7 @@ def run_migrations_online() -> None:
 
             with context.begin_transaction():
                 context.run_migrations()
-                
+
     except OperationalError as e:
         print(f"Database connection failed: {e}")
         print("Cannot generate autogenerate migration without database connection.")

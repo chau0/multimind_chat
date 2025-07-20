@@ -21,7 +21,7 @@ This document describes the comprehensive unit test suite created for the Multim
 
 #### MessageBubble.test.tsx
 - ✅ Renders user messages correctly
-- ✅ Renders agent messages correctly  
+- ✅ Renders agent messages correctly
 - ✅ Handles missing agent data
 - ✅ Displays multiline content with proper formatting
 - ✅ Shows agent description badges

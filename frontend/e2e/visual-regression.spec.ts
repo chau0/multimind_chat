@@ -27,7 +27,7 @@ test.describe('Visual Regression Tests', () => {
 
   test('should match agent selector dropdown', async ({ page }) => {
     const agentButton = page.locator('button:has-text("Assistant"), button:has-text("AI Assistant")').first();
-    
+
     // Open dropdown
     await agentButton.click();
     await expect(page.locator('text=Available Agents')).toBeVisible();
@@ -59,7 +59,7 @@ test.describe('Visual Regression Tests', () => {
 
   test('should match mobile layout', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
-    
+
     // Wait for mobile layout to settle
     await page.waitForTimeout(500);
 
@@ -71,7 +71,7 @@ test.describe('Visual Regression Tests', () => {
 
   test('should match tablet layout', async ({ page }) => {
     await page.setViewportSize({ width: 768, height: 1024 });
-    
+
     // Wait for tablet layout to settle
     await page.waitForTimeout(500);
 
@@ -84,11 +84,11 @@ test.describe('Visual Regression Tests', () => {
   test('should match dark mode if available', async ({ page }) => {
     // Try to enable dark mode if toggle exists
     const darkModeToggle = page.locator('button[aria-label*="dark"], button[aria-label*="theme"], [data-testid*="theme"]');
-    
+
     if (await darkModeToggle.count() > 0) {
       await darkModeToggle.first().click();
       await page.waitForTimeout(500); // Wait for theme transition
-      
+
       await expect(page).toHaveScreenshot('dark-mode.png', {
         fullPage: true,
         animations: 'disabled'

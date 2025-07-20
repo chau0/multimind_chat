@@ -6,16 +6,16 @@
 export const avatarMapping: Record<string, string> = {
   // Agent avatars
   'AI': '🤖',
-  'CODE': '💻', 
+  'CODE': '💻',
   'WRITE': '✍️',
   'RSRCH': '🔍',
-  
+
   // Fallback avatars
   'ASSISTANT': '🤖',
   'CODER': '💻',
-  'WRITER': '✍️', 
+  'WRITER': '✍️',
   'RESEARCHER': '🔍',
-  
+
   // Additional avatars for future agents
   'DESIGN': '🎨',
   'DATA': '📊',
@@ -40,7 +40,7 @@ export const avatarMapping: Record<string, string> = {
  */
 export function getAvatarEmoji(textAvatar: string | null | undefined): string {
   if (!textAvatar) return '❓'; // Default fallback
-  
+
   const upperAvatar = textAvatar.toUpperCase();
   return avatarMapping[upperAvatar] || textAvatar || '❓';
 }

@@ -50,7 +50,7 @@ function runCommand(command, args = [], options = {}) {
 
 async function checkPrerequisites() {
   log('🔍 Checking prerequisites...', 'blue');
-  
+
   try {
     // Check if Playwright is installed
     await runCommand('npx', ['playwright', '--version'], { stdio: 'pipe' });
@@ -77,20 +77,20 @@ async function checkPrerequisites() {
 
 async function runTestSuite(suite, options = {}) {
   const { headed = false, debug = false, ui = false, updateSnapshots = false } = options;
-  
+
   log(`🧪 Running ${suite} tests...`, 'cyan');
-  
+
   const args = ['playwright', 'test'];
-  
+
   if (suite !== 'all') {
     args.push(suite);
   }
-  
+
   if (headed) args.push('--headed');
   if (debug) args.push('--debug');
   if (ui) args.push('--ui');
   if (updateSnapshots) args.push('--update-snapshots');
-  
+
   try {
     await runCommand('npx', args);
     log(`✅ ${suite} tests completed successfully`, 'green');
@@ -102,7 +102,7 @@ async function runTestSuite(suite, options = {}) {
 
 async function generateReport() {
   log('📊 Generating test report...', 'blue');
-  
+
   try {
     await runCommand('npx', ['playwright', 'show-report']);
   } catch (error) {
@@ -113,15 +113,15 @@ async function generateReport() {
 
 async function listTests() {
   log('📋 Available test suites:', 'blue');
-  
+
   const testDir = path.join(__dirname, '..', 'e2e');
   const files = fs.readdirSync(testDir).filter(file => file.endsWith('.spec.ts'));
-  
+
   files.forEach(file => {
     const suiteName = file.replace('.spec.ts', '');
     log(`  • ${suiteName}`, 'cyan');
   });
-  
+
   log('\n🎯 Usage examples:', 'blue');
   log('  npm run test:e2e                    # Run all tests', 'cyan');
   log('  npm run test:e2e:ui                 # Run with UI', 'cyan');
@@ -133,9 +133,9 @@ async function listTests() {
 
 async function cleanupReports() {
   log('🧹 Cleaning up old test reports...', 'blue');
-  
+
   const dirs = ['test-results', 'playwright-report'];
-  
+
   for (const dir of dirs) {
     const dirPath = path.join(__dirname, '..', dir);
     if (fs.existsSync(dirPath)) {
@@ -143,32 +143,32 @@ async function cleanupReports() {
       log(`  Removed ${dir}`, 'yellow');
     }
   }
-  
+
   log('✅ Cleanup completed', 'green');
 }
 
 async function main() {
   const args = process.argv.slice(2);
   const command = args[0];
-  
+
   try {
     switch (command) {
       case 'check':
         await checkPrerequisites();
         break;
-        
+
       case 'list':
         await listTests();
         break;
-        
+
       case 'clean':
         await cleanupReports();
         break;
-        
+
       case 'report':
         await generateReport();
         break;
-        
+
       case 'run':
         const suite = args[1] || 'all';
         const options = {
@@ -177,28 +177,28 @@ async function main() {
           ui: args.includes('--ui'),
           updateSnapshots: args.includes('--update-snapshots')
         };
-        
+
         await checkPrerequisites();
         await runTestSuite(suite, options);
         break;
-        
+
       case 'visual':
         await checkPrerequisites();
-        await runTestSuite('visual-regression', { 
-          updateSnapshots: args.includes('--update') 
+        await runTestSuite('visual-regression', {
+          updateSnapshots: args.includes('--update')
         });
         break;
-        
+
       case 'performance':
         await checkPrerequisites();
         await runTestSuite('performance');
         break;
-        
+
       case 'cross-browser':
         await checkPrerequisites();
         await runTestSuite('cross-browser');
         break;
-        
+
       default:
         log('🤖 Playwright Test Runner', 'bright');
         log('');

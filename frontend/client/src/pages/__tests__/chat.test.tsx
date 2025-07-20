@@ -47,7 +47,7 @@ describe('ChatPage', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    
+
     vi.mocked(useAgents).mockReturnValue({
       data: mockAgents,
       isLoading: false,
@@ -68,7 +68,7 @@ describe('ChatPage', () => {
 
   it('renders chat interface', () => {
     render(<ChatPage />)
-    
+
     expect(screen.getByText('Multimind')).toBeInTheDocument()
     expect(screen.getByPlaceholderText(/Type your message/)).toBeInTheDocument()
     expect(screen.getByText('Hello, how can I help you?')).toBeInTheDocument()
@@ -76,29 +76,29 @@ describe('ChatPage', () => {
 
   it('displays agent selector', () => {
     render(<ChatPage />)
-    
+
     expect(screen.getByText('AI Assistant')).toBeInTheDocument()
   })
 
   it('allows sending messages', async () => {
     const user = userEvent.setup()
     render(<ChatPage />)
-    
+
     const input = screen.getByPlaceholderText(/Type your message/)
     const sendButton = screen.getByRole('button', { name: /send/i })
-    
+
     await user.type(input, 'Hello world')
     await user.click(sendButton)
-    
+
     expect(mockSendMessage).toHaveBeenCalledWith('Hello world', [])
   })
 
   it('handles agent selection', async () => {
     render(<ChatPage />)
-    
+
     const agentButton = screen.getByText('AI Assistant').closest('button')
     fireEvent.click(agentButton!)
-    
+
     await waitFor(() => {
       expect(screen.getByText('Available Agents')).toBeInTheDocument()
     })
@@ -115,7 +115,7 @@ describe('ChatPage', () => {
     } as any)
 
     render(<ChatPage />)
-    
+
     expect(screen.getByText('Loading messages...')).toBeInTheDocument()
   })
 
@@ -130,7 +130,7 @@ describe('ChatPage', () => {
     } as any)
 
     render(<ChatPage />)
-    
+
     expect(screen.getByText('Code Expert is typing')).toBeInTheDocument()
   })
 
@@ -145,10 +145,10 @@ describe('ChatPage', () => {
     } as any)
 
     render(<ChatPage />)
-    
+
     const input = screen.getByPlaceholderText(/Type your message/)
     const sendButton = screen.getByRole('button', { name: /send/i })
-    
+
     expect(input).toBeDisabled()
     expect(sendButton).toBeDisabled()
   })

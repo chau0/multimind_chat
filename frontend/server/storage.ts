@@ -4,12 +4,12 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
-  
+
   getAllAgents(): Promise<Agent[]>;
   getAgent(id: number): Promise<Agent | undefined>;
   getAgentByName(name: string): Promise<Agent | undefined>;
   createAgent(agent: InsertAgent): Promise<Agent>;
-  
+
   getAllMessages(): Promise<Message[]>;
   createMessage(message: InsertMessage): Promise<Message>;
   getMessagesByAgent(agentId: number): Promise<Message[]>;
@@ -30,7 +30,7 @@ export class MemStorage implements IStorage {
     this.currentUserId = 1;
     this.currentAgentId = 1;
     this.currentMessageId = 1;
-    
+
     // Initialize default agents
     this.initializeDefaultAgents();
   }
@@ -122,10 +122,10 @@ export class MemStorage implements IStorage {
 
   async createMessage(insertMessage: InsertMessage): Promise<Message> {
     const id = this.currentMessageId++;
-    const message: Message = { 
-      ...insertMessage, 
-      id, 
-      timestamp: new Date() 
+    const message: Message = {
+      ...insertMessage,
+      id,
+      timestamp: new Date()
     };
     this.messages.set(id, message);
     return message;

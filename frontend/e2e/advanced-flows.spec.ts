@@ -49,16 +49,16 @@ test.describe('Advanced User Flows', () => {
 
     // Use @mention to switch agents
     await messageInput.fill('@Coder can you help me debug this JavaScript?');
-    
+
     // Should show mention suggestions
     await expect(page.locator('text=Mention Agent')).toBeVisible();
-    
+
     // Select the Coder mention
     await page.locator('text=Code Expert, text=Coder').first().click();
-    
+
     // Send the message
     await sendButton.click();
-    
+
     // Should see the message and agent should be switched
     await expect(page.locator('text=@Coder can you help me debug this JavaScript?')).toBeVisible();
     await expect(page.locator('button:has-text("Coder"), button:has-text("Code Expert")').first()).toBeVisible();
@@ -134,15 +134,15 @@ test.describe('Advanced User Flows', () => {
 
     // Rapidly switch between agents
     const agents = ['Code Expert', 'Creative Writer', 'Research Assistant'];
-    
+
     for (let i = 0; i < 3; i++) {
       for (const agent of agents) {
         await agentButton.click();
         await page.locator(`text=${agent}`).first().click();
-        
+
         // Verify agent was selected
         await expect(page.locator(`button:has-text("${agent.split(' ')[0]}")`).first()).toBeVisible();
-        
+
         // Small delay to prevent overwhelming the system
         await page.waitForTimeout(100);
       }
@@ -193,7 +193,7 @@ test.describe('Advanced User Flows', () => {
     // Try to select and copy text from a message (if selectable)
     const messageText = page.locator('text=Original message for copying');
     await messageText.click();
-    
+
     // Select all text in the message (this might not work depending on implementation)
     await page.keyboard.press('Control+a');
     await page.keyboard.press('Control+c');

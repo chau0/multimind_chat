@@ -136,7 +136,7 @@ test.describe('Cross-Browser Compatibility', () => {
     // Test mention functionality
     const messageInput = page.locator('textarea[placeholder*="Type your message"]');
     await messageInput.fill('Hello @');
-    
+
     // Should show mention suggestions
     await expect(page.locator('text=Mention Agent')).toBeVisible();
   });

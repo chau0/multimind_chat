@@ -33,7 +33,7 @@ const mockAgentMessage: Message = {
 describe('MessageBubble', () => {
   it('renders user message correctly', () => {
     render(<MessageBubble message={mockUserMessage} />)
-    
+
     expect(screen.getByText('Hello, this is a user message')).toBeInTheDocument()
     expect(screen.getByText('You')).toBeInTheDocument()
     expect(screen.getByText('12:00 PM')).toBeInTheDocument()
@@ -41,7 +41,7 @@ describe('MessageBubble', () => {
 
   it('renders agent message correctly', () => {
     render(<MessageBubble message={mockAgentMessage} agent={mockAgent} />)
-    
+
     expect(screen.getByText('Hello, this is an agent response')).toBeInTheDocument()
     expect(screen.getByText('Test Agent')).toBeInTheDocument()
     expect(screen.getByText('12:01 PM')).toBeInTheDocument()
@@ -50,7 +50,7 @@ describe('MessageBubble', () => {
 
   it('renders agent message without agent data', () => {
     render(<MessageBubble message={mockAgentMessage} />)
-    
+
     expect(screen.getByText('Hello, this is an agent response')).toBeInTheDocument()
     expect(screen.getByText('Unknown')).toBeInTheDocument()
     expect(screen.getByText('?')).toBeInTheDocument() // Default avatar
@@ -61,9 +61,9 @@ describe('MessageBubble', () => {
       ...mockUserMessage,
       content: 'Line 1\nLine 2\nLine 3',
     }
-    
+
     render(<MessageBubble message={multilineMessage} />)
-    
+
     // Check that the content is rendered with whitespace-pre-wrap class
     const messageElement = screen.getByText(/Line 1/)
     expect(messageElement).toBeInTheDocument()
@@ -72,7 +72,7 @@ describe('MessageBubble', () => {
 
   it('displays agent description badge when available', () => {
     render(<MessageBubble message={mockAgentMessage} agent={mockAgent} />)
-    
+
     expect(screen.getByText('A')).toBeInTheDocument() // First word of description
   })
 })

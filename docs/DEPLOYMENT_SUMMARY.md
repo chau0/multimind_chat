@@ -5,7 +5,7 @@
 Multimind is now fully prepared for production deployment using a modern, cost-effective stack:
 
 - **Frontend**: Vercel (React/Vite) - Free tier
-- **Backend**: Render (FastAPI/Docker) - Free tier  
+- **Backend**: Render (FastAPI/Docker) - Free tier
 - **Database**: Supabase (PostgreSQL) - Free tier
 - **LLM**: OpenAI API - $5 free credit
 
@@ -117,7 +117,7 @@ python scripts/seed_agents.py
 ### 3. Frontend Deployment (5 minutes)
 ```bash
 # At vercel.com:
-# 1. Connect GitHub repo  
+# 1. Connect GitHub repo
 # 2. Set root directory: frontend
 # 3. Add VITE_API_BASE_URL with Render backend URL
 # 4. Deploy

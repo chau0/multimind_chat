@@ -1,9 +1,11 @@
+import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.v1 import chat, agents, health
-from app.logging_config import init_logging, get_logger
+
+from app.api.v1 import agents, chat, health
 from app.config import settings
-import os
+from app.logging_config import get_logger, init_logging
 
 # Initialize logging first
 init_logging()
@@ -38,29 +40,36 @@ if os.getenv("ENVIRONMENT") == "test":
     app.include_router(test_endpoints.router, prefix="/api/v1/test", tags=["test"])
     logger.info("Test endpoints enabled")
 
+
 # Add startup and shutdown event handlers
 @app.on_event("startup")
 async def startup_event():
     logger.info("Application startup initiated")
-    
+
     # Test database connection
     try:
         from app.utils.db import engine
+
         with engine.connect() as conn:
             conn.execute("SELECT 1")
         logger.info("Database connection test successful")
     except Exception as e:
         logger.error(f"Database connection test failed: {e}")
-    
+
     # Test Supabase client if configured
     try:
-        from app.utils.supabase_client import is_supabase_configured, test_supabase_connection
+        from app.utils.supabase_client import (
+            is_supabase_configured,
+            test_supabase_connection,
+        )
+
         if is_supabase_configured():
             await test_supabase_connection()
     except Exception as e:
         logger.warning(f"Supabase client test failed: {e}")
-    
+
     logger.info("Application startup completed")
+
 
 @app.on_event("shutdown")
 async def shutdown_event():

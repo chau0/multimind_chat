@@ -124,4 +124,3 @@ ID	Task Overview	UI	API	DB
 7.3	Landing page	Marketing site, email CTA	—	—
 7.4	Beta launch & feedback	In-app NPS prompt	Collect /feedback POST	feedback table
 7.5	MRR tracking job	—	Cron job aggregates Stripe revenue	revenue_daily table
-

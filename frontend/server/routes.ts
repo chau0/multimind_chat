@@ -9,7 +9,7 @@ import { createProxyMiddleware } from "http-proxy-middleware";
 export async function registerRoutes(app: Express): Promise<Server> {
   // Backend API URL
   const BACKEND_API_URL = process.env.BACKEND_API_URL || 'http://localhost:8000';
-  
+
   // API Proxy for backend
   app.use('/api/v1', createProxyMiddleware({
     target: BACKEND_API_URL,
@@ -42,9 +42,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     }
   }));
-  
+
   // Fallback routes for local development/testing
-  
+
   // Get all agents (fallback)
   app.get("/api/agents", async (req, res) => {
     try {
@@ -69,23 +69,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/messages", async (req, res) => {
     try {
       const messageData = insertMessageSchema.parse(req.body);
-      
+
       // Save user message
       const userMessage = await storage.createMessage(messageData);
-      
+
       // Parse mentions from the message
       const mentions = extractMentions(messageData.content);
-      
+
       // Generate AI responses for each mentioned agent
       const responses = [];
-      
+
       if (mentions.length > 0) {
         for (const mentionedAgent of mentions) {
           const agent = await storage.getAgentByName(mentionedAgent);
           if (agent) {
             // Simulate AI response delay
             await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
-            
+
             const aiResponse = await generateAIResponse(messageData.content, agent, userMessage);
             const aiMessage = await storage.createMessage({
               content: aiResponse,
@@ -101,7 +101,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const defaultAgent = await storage.getAgentByName("Assistant");
         if (defaultAgent) {
           await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
-          
+
           const aiResponse = await generateAIResponse(messageData.content, defaultAgent, userMessage);
           const aiMessage = await storage.createMessage({
             content: aiResponse,
@@ -112,7 +112,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           responses.push(aiMessage);
         }
       }
-      
+
       res.json({
         userMessage,
         responses,
@@ -134,11 +134,11 @@ function extractMentions(content: string): string[] {
   const mentionRegex = /@(\w+)/g;
   const mentions = [];
   let match;
-  
+
   while ((match = mentionRegex.exec(content)) !== null) {
     mentions.push(match[1]);
   }
-  
+
   return Array.from(new Set(mentions)); // Remove duplicates
 }
 
@@ -169,6 +169,6 @@ async function generateAIResponse(userMessage: string, agent: any, originalMessa
 
   const agentResponses = responses[agent.name as keyof typeof responses] || responses.Assistant;
   const randomResponse = agentResponses[Math.floor(Math.random() * agentResponses.length)];
-  
+
   return randomResponse;
 }

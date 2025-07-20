@@ -52,12 +52,12 @@ npm run dev
 
 If you encounter issues:
 
-1. **API Connection Issues**: 
+1. **API Connection Issues**:
    - Check that the backend is running and accessible
    - Verify the BACKEND_API_URL environment variable is correct
    - Check browser console for CORS errors
 
-2. **Missing Agents**: 
+2. **Missing Agents**:
    - Ensure the database is properly seeded with agents
    - Check the backend logs for database connection issues
 
