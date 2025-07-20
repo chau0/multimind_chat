@@ -1,5 +1,6 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Text
+from sqlalchemy import Column, Integer, String, ForeignKey, Text, DateTime
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
 from app.utils.db import Base
 
 class Agent(Base):
@@ -25,6 +26,7 @@ class Message(Base):
     content = Column(Text)  # Messages can be long
     session_id = Column(String(255), ForeignKey("chat_sessions.id"))
     agent_id = Column(Integer, ForeignKey("agents.id"))
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     session = relationship("ChatSession")
     agent = relationship("Agent")

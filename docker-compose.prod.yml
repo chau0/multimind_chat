@@ -1,0 +1,75 @@
+version: '3.8'
+
+# Production Docker Compose Configuration
+# This file is for reference - actual production deployment uses Render + Vercel
+# Use this for local production testing or self-hosted deployments
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      # Database Configuration (Supabase PostgreSQL)
+      - DATABASE_URL=${DATABASE_URL}
+      # OpenAI Configuration
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      # Application Configuration
+      - ENVIRONMENT=production
+      - DEBUG=false
+      - CORS_ORIGINS=["https://your-frontend-domain.com"]
+      - LOG_LEVEL=INFO
+      - LOG_ENABLE_CONSOLE=true
+    restart: unless-stopped
+    networks:
+      - multimind-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - VITE_API_BASE_URL=https://your-backend-domain.com/api
+      - NODE_ENV=production
+      - PORT=5000
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - multimind-network
+
+  # Optional: Nginx reverse proxy for self-hosted deployments
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - multimind-network
+    restart: unless-stopped
+
+networks:
+  multimind-network:
+    driver: bridge
+
+# Optional: Volumes for persistent data in self-hosted deployments
+volumes:
+  postgres_data:
+    driver: local

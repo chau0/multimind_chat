@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1 import chat, agents, health
 from app.logging_config import init_logging, get_logger
+from app.config import settings
 import os
 
 # Initialize logging first
@@ -17,7 +18,7 @@ app = FastAPI(title="Multimind API", version="1.0.0")
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, replace with specific origins
+    allow_origins=settings.cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -40,6 +41,25 @@ if os.getenv("ENVIRONMENT") == "test":
 # Add startup and shutdown event handlers
 @app.on_event("startup")
 async def startup_event():
+    logger.info("Application startup initiated")
+    
+    # Test database connection
+    try:
+        from app.utils.db import engine
+        with engine.connect() as conn:
+            conn.execute("SELECT 1")
+        logger.info("Database connection test successful")
+    except Exception as e:
+        logger.error(f"Database connection test failed: {e}")
+    
+    # Test Supabase client if configured
+    try:
+        from app.utils.supabase_client import is_supabase_configured, test_supabase_connection
+        if is_supabase_configured():
+            await test_supabase_connection()
+    except Exception as e:
+        logger.warning(f"Supabase client test failed: {e}")
+    
     logger.info("Application startup completed")
 
 @app.on_event("shutdown")
