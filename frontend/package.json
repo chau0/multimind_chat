@@ -94,7 +94,10 @@
     "wouter": "^3.3.5",
     "ws": "^8.18.0",
     "zod": "^3.24.2",
-    "zod-validation-error": "^3.4.0"
+    "zod-validation-error": "^3.4.0",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.17"
   },
   "devDependencies": {
     "@playwright/test": "^1.54.1",
@@ -115,7 +118,6 @@
     "@types/ws": "^8.5.13",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
-    "autoprefixer": "^10.4.20",
     "drizzle-kit": "^0.30.4",
     "eslint": "^8.56.0",
     "eslint-plugin-react": "^7.33.2",
@@ -123,9 +125,7 @@
     "eslint-plugin-react-refresh": "^0.4.5",
     "jsdom": "^23.0.1",
     "playwright": "^1.54.1",
-    "postcss": "^8.5.6",
     "prettier": "^3.2.5",
-    "tailwindcss": "^3.4.17",
     "tsx": "^4.19.1",
     "typescript": "5.6.3",
     "vitest": "^1.0.4"
