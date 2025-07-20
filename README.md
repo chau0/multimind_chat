@@ -1,8 +1,5 @@
-# 🤖 MultiMind - Multi-Agent Chat Application
+# 🤖 multimind_chat - Multi-Agent Chat Application
 
-[![Build Status](https://github.com/chau0/multimind/workflows/CI/badge.svg)](https://github.com/chau0/multimind/actions)
-[![Frontend Deploy](https://github.com/chau0/multimind/workflows/Deploy%20Frontend/badge.svg)](https://github.com/chau0/multimind/actions)
-[![Backend Deploy](https://github.com/chau0/multimind/workflows/Deploy%20Backend/badge.svg)](https://github.com/chau0/multimind/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Node.js 18+](https://img.shields.io/badge/node.js-18+-green.svg)](https://nodejs.org/)
@@ -74,7 +71,7 @@
 1. **Clone and setup environment**
    ```bash
    git clone <repository-url>
-   cd multimind
+   cd multimind_chat
    cp .env.example .env
    # Edit .env with your credentials
    ```
@@ -253,10 +250,10 @@ See [DEPLOYMENT_GUIDE.md](docs/DEPLOYMENT_GUIDE.md) for detailed deployment inst
 ## 📊 Project Status
 
 ### 📈 Project Metrics
-![GitHub repo size](https://img.shields.io/github/repo-size/chau0/multimind)
-![Lines of code](https://img.shields.io/tokei/lines/github/chau0/multimind)
-![GitHub commit activity](https://img.shields.io/github/commit-activity/m/chau0/multimind)
-![GitHub last commit](https://img.shields.io/github/last-commit/chau0/multimind)
+![GitHub repo size](https://img.shields.io/github/repo-size/chau0/multimind_chat)
+![Lines of code](https://img.shields.io/tokei/lines/github/chau0/multimind_chat)
+![GitHub commit activity](https://img.shields.io/github/commit-activity/m/chau0/multimind_chat)
+![GitHub last commit](https://img.shields.io/github/last-commit/chau0/multimind_chat)
 
 ### 🎯 Development Progress
 
@@ -286,7 +283,7 @@ See [DEPLOYMENT_GUIDE.md](docs/DEPLOYMENT_GUIDE.md) for detailed deployment inst
 
 ### Project Structure
 ```
-multimind/
+multimind_chat/
 ├── frontend/              # React frontend
 │   ├── client/           # React app source
 │   ├── server/           # Express server + API proxy
@@ -312,7 +309,7 @@ multimind/
 ## 🎬 Demo & Screenshots
 
 ### Live Demo
-🌐 **[Try MultiMind Live](https://multimind-frontend.vercel.app)** (Demo deployment)
+🌐 **[Try multimind_chat Live](https://multimind_chat-frontend.vercel.app)** (Demo deployment)
 
 ### Key Features in Action
 - **@Mention System**: Type `@Assistant`, `@Coder`, `@Writer`, or `@Researcher` to summon specific agents
@@ -387,16 +384,16 @@ cd frontend && npm run test && npm run test:integration
 ## 🆘 Support & Community
 
 ### 🐛 Issues & Bug Reports
-- **GitHub Issues**: [Report bugs or request features](https://github.com/chau0/multimind/issues)
+- **GitHub Issues**: [Report bugs or request features](https://github.com/chau0/multimind_chat/issues)
 - **Bug Template**: Use our issue templates for faster resolution
 
 ### 💬 Community & Discussion
-- **GitHub Discussions**: [Join the conversation](https://github.com/chau0/multimind/discussions)
-- **Discord**: [Join our Discord server](https://discord.gg/multimind) (Coming soon)
+- **GitHub Discussions**: [Join the conversation](https://github.com/chau0/multimind_chat/discussions)
+- **Discord**: [Join our Discord server](https://discord.gg/multimind_chat) (Coming soon)
 
 ### 📧 Contact
 - **Maintainer**: [@chau0](https://github.com/chau0)
-- **Email**: support@multimind.dev (for security issues)
+- **Email**: support@multimind_chat.dev (for security issues)
 
 ### 🔒 Security
 - **Security Policy**: See [SECURITY.md](SECURITY.md) for reporting vulnerabilities
@@ -420,12 +417,12 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ### 🌟 Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=chau0/multimind&type=Date)](https://star-history.com/#chau0/multimind&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=chau0/multimind_chat&type=Date)](https://star-history.com/#chau0/multimind_chat&Date)
 
 **Built with ❤️ for the future of AI collaboration**
 
-![Visitors](https://visitor-badge.laobi.icu/badge?page_id=chau0.multimind)
-[![GitHub stars](https://img.shields.io/github/stars/chau0/multimind?style=social)](https://github.com/chau0/multimind/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/chau0/multimind?style=social)](https://github.com/chau0/multimind/network/members)
+![Visitors](https://visitor-badge.laobi.icu/badge?page_id=chau0.multimind_chat)
+[![GitHub stars](https://img.shields.io/github/stars/chau0/multimind_chat?style=social)](https://github.com/chau0/multimind_chat/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/chau0/multimind_chat?style=social)](https://github.com/chau0/multimind_chat/network/members)
 
 </div>
