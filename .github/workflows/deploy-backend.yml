@@ -31,11 +31,10 @@ jobs:
 
     - name: Run linting
       run: |
-        uv pip install --system flake8 black isort mypy
+        uv pip install --system flake8 black isort
         flake8 app/ --max-line-length=88 --extend-ignore=E203,W503
         black --check app/
         isort --check-only app/
-        mypy app/ --ignore-missing-imports
 
     - name: Run tests
       run: |

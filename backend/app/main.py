@@ -25,7 +25,21 @@ class CustomCORSMiddleware(BaseHTTPMiddleware):
         self.allowed_origins = allowed_origins
         self.allow_credentials = kwargs.get("allow_credentials", True)
         self.allow_methods = kwargs.get("allow_methods", ["*"])
-        self.allow_headers = kwargs.get("allow_headers", ["*"])
+        # Explicitly list common headers instead of using "*"
+        self.allow_headers = kwargs.get(
+            "allow_headers",
+            [
+                "accept",
+                "accept-encoding",
+                "authorization",
+                "content-type",
+                "dnt",
+                "origin",
+                "user-agent",
+                "x-csrftoken",
+                "x-requested-with",
+            ],
+        )
 
     def is_origin_allowed(self, origin: str) -> bool:
         """Check if origin is allowed, supporting wildcards."""
@@ -80,7 +94,17 @@ app.add_middleware(
     allowed_origins=settings.effective_cors_origins,
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["*"],
+    allow_headers=[
+        "accept",
+        "accept-encoding",
+        "authorization",
+        "content-type",
+        "dnt",
+        "origin",
+        "user-agent",
+        "x-csrftoken",
+        "x-requested-with",
+    ],
 )
 
 # Log application startup
