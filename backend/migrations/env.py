@@ -15,9 +15,9 @@ ROOT_DIR = Path(__file__).resolve().parent.parent
 sys.path.append(str(ROOT_DIR))
 
 # ── Local imports (deferred until after path tweak) ────────────────────────────
-from app.config import settings          # noqa: E402
-from app.utils.db import Base            # noqa: E402
-from app.models import chat              # noqa: F401  (imported for autogenerate)
+from app.config import settings  # noqa: E402
+from app.utils.db import Base  # noqa: E402
+from app.models import chat  # noqa: F401  (imported for autogenerate)
 
 # ── Alembic configuration ─────────────────────────────────────────────────────
 config = context.config

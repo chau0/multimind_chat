@@ -31,6 +31,9 @@ class Settings(BaseSettings):
     debug: bool = False
     cors_origins: list[str] = ["http://localhost:3000", "http://localhost:5173"]
 
+    # Frontend URL for production (Vercel)
+    frontend_url: Optional[str] = None
+
     # Logging configuration
     log_level: str = "INFO"
     log_dir: str = "logs"
@@ -159,6 +162,35 @@ class Settings(BaseSettings):
             "No OpenAI API key configured. Set OPENAI_API_KEY or "
             "Azure OpenAI config."
         )
+
+    @property
+    def effective_cors_origins(self) -> list[str]:
+        """Get effective CORS origins including dynamic Vercel URLs."""
+        origins = self.cors_origins.copy()
+
+        # Add frontend URL if specified
+        if self.frontend_url:
+            origins.append(self.frontend_url)
+
+        # In production, allow Vercel preview URLs
+        if self.environment == "production":
+            # Allow all Vercel preview URLs for your app
+            origins.extend(
+                [
+                    "https://*.vercel.app",
+                    # Vercel preview URLs with project name pattern
+                    "https://multimind-chat-*-chau0s-projects.vercel.app",
+                    "https://multimind-frontend-*-chau0s-projects.vercel.app",
+                    # Main production URLs
+                    "https://multimind-chat.vercel.app",
+                    "https://multimind-frontend.vercel.app",
+                    # Git branch URLs
+                    "https://multimind-chat-git-*.vercel.app",
+                    "https://multimind-frontend-git-*.vercel.app",
+                ]
+            )
+
+        return list(set(origins))  # Remove duplicates
 
 
 settings = Settings()

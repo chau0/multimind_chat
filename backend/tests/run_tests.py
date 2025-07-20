@@ -20,11 +20,7 @@ def run_command(command, description):
 
     try:
         result = subprocess.run(
-            command,
-            shell=True,
-            check=True,
-            capture_output=True,
-            text=True
+            command, shell=True, check=True, capture_output=True, text=True
         )
         print(result.stdout)
         if result.stderr:
@@ -48,16 +44,15 @@ def main():
     os.chdir(backend_dir)
 
     # Set test environment
-    os.environ['ENVIRONMENT'] = 'test'
-    os.environ['DATABASE_URL'] = 'sqlite:///test.db'
-    os.environ['OPENAI_API_KEY'] = 'test-key'
+    os.environ["ENVIRONMENT"] = "test"
+    os.environ["DATABASE_URL"] = "sqlite:///test.db"
+    os.environ["OPENAI_API_KEY"] = "test-key"
 
     success = True
 
     # 1. Install dependencies
     if not run_command(
-        "uv pip install -r requirements/dev.txt",
-        "Installing test dependencies"
+        "uv pip install -r requirements/dev.txt", "Installing test dependencies"
     ):
         success = False
 
@@ -67,56 +62,47 @@ def main():
     # Flake8
     if not run_command(
         "flake8 app/ tests/ --max-line-length=88 --extend-ignore=E203,W503",
-        "Running flake8 linting"
+        "Running flake8 linting",
     ):
         print("⚠️  Linting issues found, but continuing with tests...")
 
     # Black formatting check
     if not run_command(
-        "black --check app/ tests/",
-        "Checking code formatting with black"
+        "black --check app/ tests/", "Checking code formatting with black"
     ):
         print("⚠️  Formatting issues found, but continuing with tests...")
 
     # isort import sorting check
     if not run_command(
-        "isort --check-only app/ tests/",
-        "Checking import sorting with isort"
+        "isort --check-only app/ tests/", "Checking import sorting with isort"
     ):
         print("⚠️  Import sorting issues found, but continuing with tests...")
 
     # 3. Type checking
     if not run_command(
-        "mypy app/ --ignore-missing-imports",
-        "Running type checking with mypy"
+        "mypy app/ --ignore-missing-imports", "Running type checking with mypy"
     ):
         print("⚠️  Type checking issues found, but continuing with tests...")
 
     # 4. Run unit tests with coverage
     if not run_command(
         "pytest tests/unit/ -v --cov=app --cov-report=term-missing --cov-report=html --cov-fail-under=80",
-        "Running unit tests with coverage"
+        "Running unit tests with coverage",
     ):
         success = False
 
     # 5. Run integration tests
-    if not run_command(
-        "pytest tests/integration/ -v",
-        "Running integration tests"
-    ):
+    if not run_command("pytest tests/integration/ -v", "Running integration tests"):
         success = False
 
     # 6. Run E2E tests
-    if not run_command(
-        "pytest tests/e2e/ -v",
-        "Running end-to-end tests"
-    ):
+    if not run_command("pytest tests/e2e/ -v", "Running end-to-end tests"):
         success = False
 
     # 7. Security checks (if bandit is available)
     run_command(
         "bandit -r app/ -f json -o bandit-report.json || echo 'Bandit not available'",
-        "Running security checks with bandit"
+        "Running security checks with bandit",
     )
 
     # 8. Generate test report

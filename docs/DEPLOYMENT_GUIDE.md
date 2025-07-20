@@ -66,10 +66,16 @@ DATABASE_URL=postgresql://postgres:your-password@db.your-project.supabase.co:543
 OPENAI_API_KEY=sk-your-openai-api-key-here
 ENVIRONMENT=production
 DEBUG=false
-CORS_ORIGINS=["https://your-app.vercel.app"]
+FRONTEND_URL=https://your-app.vercel.app
 LOG_LEVEL=INFO
 LOG_ENABLE_CONSOLE=true
 ```
+
+> **🔥 New CORS Configuration**: The backend now automatically handles all Vercel preview URLs! When `ENVIRONMENT=production`, it allows:
+> - All Vercel preview URLs (e.g., `https://your-app-abc123-username.vercel.app`)
+> - Git branch URLs (e.g., `https://your-app-git-main.vercel.app`)
+> - Your main production URL
+> - No manual CORS configuration needed for each preview!
 
 ### 2.3 Deploy
 1. Click "Create Web Service"
@@ -102,11 +108,16 @@ NODE_ENV=production
 2. Vercel will build and deploy automatically
 3. Your app will be available at: `https://your-app.vercel.app`
 
-### 3.4 Update Backend CORS
-Update your Render backend environment variables:
+### 3.4 Update Backend Frontend URL (Optional)
+If you want to specify your main production URL, update your Render backend:
 ```bash
-CORS_ORIGINS=["https://your-app.vercel.app","https://your-app-git-main.vercel.app"]
+FRONTEND_URL=https://your-actual-app-name.vercel.app
 ```
+
+> **✅ No CORS Updates Needed**: The backend automatically allows all Vercel URLs including:
+> - Preview deployments: `https://your-app-abc123-username.vercel.app`
+> - Branch deployments: `https://your-app-git-feature.vercel.app`
+> - Production URL: `https://your-app.vercel.app`
 
 ## 🔧 Step 4: Configure CI/CD (Optional)
 
@@ -148,7 +159,11 @@ curl https://your-backend-service.onrender.com/api/v1/agents
 ### Backend Issues
 - **Cold starts**: Free Render services sleep after 15 minutes. First request may take 30+ seconds
 - **Database connection**: Check Supabase connection string format
-- **CORS errors**: Ensure frontend URL is in `CORS_ORIGINS`
+- **CORS errors**: 
+  - Ensure `ENVIRONMENT=production` is set in Render
+  - Check backend logs for "CORS origins" to see what's allowed
+  - Verify your Vercel URL matches the expected pattern
+  - For custom domains, add them to `CORS_ORIGINS` manually
 
 ### Frontend Issues
 - **API calls failing**: Verify `VITE_API_BASE_URL` points to your Render service

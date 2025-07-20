@@ -16,12 +16,15 @@ class TestSettings:
             openai_api_key=None,
             azure_openai_endpoint=None,
             azure_openai_api_key=None,
-            debug=False  # Override env var
+            debug=False,  # Override env var
         )
 
         assert settings.environment == "development"
         assert settings.debug is False
-        assert settings.cors_origins == ["http://localhost:3000", "http://localhost:5173"]
+        assert settings.cors_origins == [
+            "http://localhost:3000",
+            "http://localhost:5173",
+        ]
         assert settings.log_level == "INFO"
         assert settings.log_dir == "logs"
         assert settings.log_max_files == 30
@@ -40,11 +43,13 @@ class TestSettings:
         settings = Settings(
             database_url=None,  # Override env var
             supabase_url="https://test-project.supabase.co",
-            supabase_key="test-key"
+            supabase_key="test-key",
         )
 
         result = settings.effective_database_url
-        expected = "postgresql://postgres:test-key@db.test-project.supabase.co:5432/postgres"
+        expected = (
+            "postgresql://postgres:test-key@db.test-project.supabase.co:5432/postgres"
+        )
         assert result == expected
 
     def test_effective_database_url_azure_sql(self):
@@ -56,7 +61,7 @@ class TestSettings:
             azure_sql_server="test-server.database.windows.net",
             azure_sql_database="test-db",
             azure_sql_username="test-user",
-            azure_sql_password="test-pass"
+            azure_sql_password="test-pass",
         )
 
         result = settings.effective_database_url
@@ -76,7 +81,7 @@ class TestSettings:
             azure_sql_server=None,
             azure_sql_database=None,
             azure_sql_username=None,
-            azure_sql_password=None
+            azure_sql_password=None,
         )
 
         with pytest.raises(ValueError, match="No database configuration found"):
@@ -94,7 +99,7 @@ class TestSettings:
         settings = Settings(
             database_url=None,  # Override env var
             supabase_url="https://test-project.supabase.co",
-            supabase_key="test-key"
+            supabase_key="test-key",
         )
 
         result = settings.effective_async_database_url
@@ -110,7 +115,7 @@ class TestSettings:
             azure_sql_server="test-server.database.windows.net",
             azure_sql_database="test-db",
             azure_sql_username="test-user",
-            azure_sql_password="test-pass"
+            azure_sql_password="test-pass",
         )
 
         result = settings.effective_async_database_url
@@ -125,7 +130,7 @@ class TestSettings:
             azure_sql_server="test-server.database.windows.net",
             azure_sql_database="test-db",
             azure_sql_username="test@user",
-            azure_sql_password="pass@word#123"
+            azure_sql_password="pass@word#123",
         )
 
         result = settings._build_azure_sql_url()
@@ -138,17 +143,14 @@ class TestSettings:
         """Test is_using_azure_openai returns True when Azure config present."""
         settings = Settings(
             azure_openai_endpoint="https://test.openai.azure.com/",
-            azure_openai_api_key="test-key"
+            azure_openai_api_key="test-key",
         )
 
         assert settings.is_using_azure_openai is True
 
     def test_is_using_azure_openai_false(self):
         """Test is_using_azure_openai returns False when Azure config missing."""
-        settings = Settings(
-            azure_openai_endpoint=None,
-            azure_openai_api_key=None
-        )
+        settings = Settings(azure_openai_endpoint=None, azure_openai_api_key=None)
         assert settings.is_using_azure_openai is False
 
     def test_is_using_azure_openai_partial_config(self, isolated_settings):
@@ -158,14 +160,13 @@ class TestSettings:
         # Only endpoint, no key
         settings1 = TestSettings(
             azure_openai_endpoint="https://test.openai.azure.com/",
-            azure_openai_api_key=None
+            azure_openai_api_key=None,
         )
         assert settings1.is_using_azure_openai is False
 
         # Only key, no endpoint
         settings2 = TestSettings(
-            azure_openai_endpoint=None,
-            azure_openai_api_key="test-key"
+            azure_openai_endpoint=None, azure_openai_api_key="test-key"
         )
         assert settings2.is_using_azure_openai is False
 
@@ -173,7 +174,7 @@ class TestSettings:
         """Test effective_openai_api_key with Azure OpenAI."""
         settings = Settings(
             azure_openai_endpoint="https://test.openai.azure.com/",
-            azure_openai_api_key="azure-key"
+            azure_openai_api_key="azure-key",
         )
 
         result = settings.effective_openai_api_key
@@ -185,7 +186,7 @@ class TestSettings:
         settings = TestSettings(
             openai_api_key="sk-standard-key",
             azure_openai_endpoint=None,
-            azure_openai_api_key=None
+            azure_openai_api_key=None,
         )
 
         result = settings.effective_openai_api_key
@@ -195,9 +196,7 @@ class TestSettings:
         """Test effective_openai_api_key raises error when no key configured."""
         TestSettings = isolated_settings
         settings = TestSettings(
-            openai_api_key=None,
-            azure_openai_endpoint=None,
-            azure_openai_api_key=None
+            openai_api_key=None, azure_openai_endpoint=None, azure_openai_api_key=None
         )
 
         with pytest.raises(ValueError, match="No OpenAI API key configured"):
@@ -209,7 +208,7 @@ class TestSettings:
         settings = TestSettings(
             database_url=None,
             supabase_url="https://abcdefghijklmnop.supabase.co",
-            supabase_key="test-key"
+            supabase_key="test-key",
         )
 
         result = settings.effective_database_url
@@ -252,7 +251,7 @@ class TestSettings:
             log_level="DEBUG",
             log_dir="custom_logs",
             log_max_files=50,
-            log_enable_console=False
+            log_enable_console=False,
         )
 
         assert settings.log_level == "DEBUG"
@@ -266,7 +265,7 @@ class TestSettings:
             azure_openai_endpoint="https://custom.openai.azure.com/",
             azure_openai_api_key="custom-key",
             azure_openai_deployment="custom-deployment",
-            azure_openai_api_version="2024-06-01"
+            azure_openai_api_version="2024-06-01",
         )
 
         assert settings.azure_openai_endpoint == "https://custom.openai.azure.com/"
@@ -274,15 +273,18 @@ class TestSettings:
         assert settings.azure_openai_deployment == "custom-deployment"
         assert settings.azure_openai_api_version == "2024-06-01"
 
-    @patch.dict('os.environ', {
-        'DATABASE_URL': 'postgresql://env:pass@host:5432/db',
-        'OPENAI_API_KEY': 'sk-env-key',
-        'ENVIRONMENT': 'production'
-    })
+    @patch.dict(
+        "os.environ",
+        {
+            "DATABASE_URL": "postgresql://env:pass@host:5432/db",
+            "OPENAI_API_KEY": "sk-env-key",
+            "ENVIRONMENT": "production",
+        },
+    )
     def test_settings_from_environment(self):
         """Test settings loading from environment variables."""
         settings = Settings()
 
-        assert settings.database_url == 'postgresql://env:pass@host:5432/db'
-        assert settings.openai_api_key == 'sk-env-key'
-        assert settings.environment == 'production'
+        assert settings.database_url == "postgresql://env:pass@host:5432/db"
+        assert settings.openai_api_key == "sk-env-key"
+        assert settings.environment == "production"

@@ -3,7 +3,10 @@ from unittest.mock import MagicMock, AsyncMock
 from sqlalchemy.orm import Session
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.repositories.agent_repo import (
-    get_agents, get_agents_async, get_agent_by_name_async, get_agent_by_id_async
+    get_agents,
+    get_agents_async,
+    get_agent_by_name_async,
+    get_agent_by_id_async,
 )
 from app.models.chat import Agent
 
@@ -16,9 +19,11 @@ class TestAgentRepo:
         db_mock = MagicMock(spec=Session)
 
         mock_agents = [
-            MagicMock(spec=Agent, id=1, name="Assistant", description="Helpful assistant"),
+            MagicMock(
+                spec=Agent, id=1, name="Assistant", description="Helpful assistant"
+            ),
             MagicMock(spec=Agent, id=2, name="Coder", description="Programming expert"),
-            MagicMock(spec=Agent, id=3, name="Writer", description="Content creator")
+            MagicMock(spec=Agent, id=3, name="Writer", description="Content creator"),
         ]
 
         db_mock.query.return_value.all.return_value = mock_agents
@@ -51,7 +56,7 @@ class TestAgentRepo:
 
         mock_agents = [
             MagicMock(spec=Agent, id=1, name="Assistant"),
-            MagicMock(spec=Agent, id=2, name="Coder")
+            MagicMock(spec=Agent, id=2, name="Coder"),
         ]
 
         mock_result = MagicMock()

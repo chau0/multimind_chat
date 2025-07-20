@@ -30,17 +30,26 @@ class TestChatService:
         mock_response_message = MagicMock(spec=Message)
         mock_response_message.id = 2
         from datetime import datetime
+
         mock_response_message.created_at = datetime.now()
 
-        with patch('app.services.chat_service.agent_repo') as mock_agent_repo, \
-             patch('app.services.chat_service.chat_repo') as mock_chat_repo, \
-             patch('app.services.chat_service.llm_service') as mock_llm_service, \
-             patch('app.services.chat_service._build_context_async') as mock_build_context:
+        with (
+            patch("app.services.chat_service.agent_repo") as mock_agent_repo,
+            patch("app.services.chat_service.chat_repo") as mock_chat_repo,
+            patch("app.services.chat_service.llm_service") as mock_llm_service,
+            patch(
+                "app.services.chat_service._build_context_async"
+            ) as mock_build_context,
+        ):
 
             # Configure mocks
             mock_agent_repo.get_agent_by_name_async = AsyncMock(return_value=mock_agent)
-            mock_chat_repo.create_message_async = AsyncMock(side_effect=[mock_user_message, mock_response_message])
-            mock_llm_service.generate_response_async = AsyncMock(return_value="Hello! How can I help you?")
+            mock_chat_repo.create_message_async = AsyncMock(
+                side_effect=[mock_user_message, mock_response_message]
+            )
+            mock_llm_service.generate_response_async = AsyncMock(
+                return_value="Hello! How can I help you?"
+            )
             mock_build_context = AsyncMock(return_value=[])
 
             # Execute
@@ -54,7 +63,9 @@ class TestChatService:
             assert result["session_id"] == "test-session"
 
             # Verify function calls
-            mock_agent_repo.get_agent_by_name_async.assert_called_once_with(db_mock, "Assistant")
+            mock_agent_repo.get_agent_by_name_async.assert_called_once_with(
+                db_mock, "Assistant"
+            )
             mock_llm_service.generate_response_async.assert_called_once()
             assert mock_chat_repo.create_message_async.call_count == 2
 
@@ -73,7 +84,7 @@ class TestChatService:
         db_mock = AsyncMock(spec=AsyncSession)
         message = MessageCreate(content="@NonExistent help", session_id="test-session")
 
-        with patch('app.services.chat_service.agent_repo') as mock_agent_repo:
+        with patch("app.services.chat_service.agent_repo") as mock_agent_repo:
             mock_agent_repo.get_agent_by_name_async = AsyncMock(return_value=None)
 
             with pytest.raises(ValueError, match="Agent 'NonExistent' not found"):
@@ -97,12 +108,14 @@ class TestChatService:
         mock_agent = MagicMock(spec=Agent)
         mock_agent.name = "Assistant"
 
-        with patch('app.services.chat_service.chat_repo') as mock_chat_repo, \
-             patch('app.services.chat_service.agent_repo') as mock_agent_repo:
+        with (
+            patch("app.services.chat_service.chat_repo") as mock_chat_repo,
+            patch("app.services.chat_service.agent_repo") as mock_agent_repo,
+        ):
 
-            mock_chat_repo.get_messages_by_session_async = AsyncMock(return_value=[
-                mock_user_message, mock_agent_message
-            ])
+            mock_chat_repo.get_messages_by_session_async = AsyncMock(
+                return_value=[mock_user_message, mock_agent_message]
+            )
             mock_agent_repo.get_agent_by_id_async = AsyncMock(return_value=mock_agent)
 
             # Execute
@@ -119,7 +132,7 @@ class TestChatService:
         db_mock = AsyncMock(spec=AsyncSession)
         session_id = "empty-session"
 
-        with patch('app.services.chat_service.chat_repo') as mock_chat_repo:
+        with patch("app.services.chat_service.chat_repo") as mock_chat_repo:
             mock_chat_repo.get_messages_by_session_async = AsyncMock(return_value=[])
 
             # Execute
@@ -138,13 +151,19 @@ class TestChatService:
         mock_agent.id = 1
         mock_agent.name = "Assistant"
 
-        with patch('app.services.chat_service.agent_repo') as mock_agent_repo, \
-             patch('app.services.chat_service.llm_service') as mock_llm_service, \
-             patch('app.services.chat_service._build_context_async') as mock_build_context:
+        with (
+            patch("app.services.chat_service.agent_repo") as mock_agent_repo,
+            patch("app.services.chat_service.llm_service") as mock_llm_service,
+            patch(
+                "app.services.chat_service._build_context_async"
+            ) as mock_build_context,
+        ):
 
             mock_agent_repo.get_agent_by_name_async = AsyncMock(return_value=mock_agent)
             mock_build_context = AsyncMock(return_value=[])
-            mock_llm_service.generate_response_async = AsyncMock(side_effect=Exception("API Error"))
+            mock_llm_service.generate_response_async = AsyncMock(
+                side_effect=Exception("API Error")
+            )
 
             # Execute and verify exception is raised
             with pytest.raises(Exception):

@@ -4,8 +4,12 @@ from sqlalchemy.orm import Session
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 from app.repositories.chat_repo import (
-    create_session, create_message, get_messages_by_session,
-    create_session_async, create_message_async, get_messages_by_session_async
+    create_session,
+    create_message,
+    get_messages_by_session,
+    create_session_async,
+    create_message_async,
+    get_messages_by_session_async,
 )
 from app.schemas.chat import MessageCreate
 from app.models.chat import ChatSession, Message
@@ -49,7 +53,9 @@ class TestChatRepo:
 
         # Configure mocks to simulate IntegrityError
         db_mock.commit.side_effect = IntegrityError("", "", "")
-        db_mock.query.return_value.filter.return_value.first.return_value = existing_session
+        db_mock.query.return_value.filter.return_value.first.return_value = (
+            existing_session
+        )
 
         # Execute
         result = create_session(db_mock, session_id)
@@ -66,13 +72,13 @@ class TestChatRepo:
             content="Hello world",
             session_id="test-session",
             agent_id=1,
-            mentions=["Assistant"]
+            mentions=["Assistant"],
         )
 
         mock_message = MagicMock(spec=Message)
         mock_message.id = 1
 
-        with patch('app.repositories.chat_repo.create_session') as mock_create_session:
+        with patch("app.repositories.chat_repo.create_session") as mock_create_session:
             mock_create_session.return_value = MagicMock()
 
             # Execute
@@ -98,7 +104,7 @@ class TestChatRepo:
 
         mock_messages = [
             MagicMock(spec=Message, id=1, content="Hello"),
-            MagicMock(spec=Message, id=2, content="Hi there")
+            MagicMock(spec=Message, id=2, content="Hi there"),
         ]
 
         db_mock.query.return_value.filter.return_value.all.return_value = mock_messages
@@ -158,15 +164,15 @@ class TestChatRepo:
         # Setup
         db_mock = AsyncMock(spec=AsyncSession)
         message_create = MessageCreate(
-            content="Async hello",
-            session_id="async-session",
-            agent_id=2
+            content="Async hello", session_id="async-session", agent_id=2
         )
 
         mock_message = MagicMock(spec=Message)
         mock_message.id = 1
 
-        with patch('app.repositories.chat_repo.create_session_async') as mock_create_session:
+        with patch(
+            "app.repositories.chat_repo.create_session_async"
+        ) as mock_create_session:
             mock_create_session.return_value = MagicMock()
 
             # Execute
@@ -187,7 +193,7 @@ class TestChatRepo:
 
         mock_messages = [
             MagicMock(spec=Message, id=1, content="First"),
-            MagicMock(spec=Message, id=2, content="Second")
+            MagicMock(spec=Message, id=2, content="Second"),
         ]
 
         mock_result = MagicMock()

@@ -30,7 +30,7 @@ class TestAgentsEndpoint:
                 "system_prompt": "You are a helpful assistant",
                 "display_name": "Assistant",
                 "avatar": "A",
-                "color": "from-blue-500 to-blue-600"
+                "color": "from-blue-500 to-blue-600",
             },
             {
                 "id": 2,
@@ -39,11 +39,11 @@ class TestAgentsEndpoint:
                 "system_prompt": "You are a coding expert",
                 "display_name": "Coder",
                 "avatar": "C",
-                "color": "from-green-500 to-green-600"
-            }
+                "color": "from-green-500 to-green-600",
+            },
         ]
 
-        with patch('app.api.v1.agents.agent_service.get_agents') as mock_get_agents:
+        with patch("app.api.v1.agents.agent_service.get_agents") as mock_get_agents:
             mock_get_agents.return_value = mock_agents
 
             response = client.get("/api/v1/agents")
@@ -55,7 +55,7 @@ class TestAgentsEndpoint:
 
     def test_get_agents_empty(self, client):
         """Test agents endpoint with no agents."""
-        with patch('app.api.v1.agents.agent_service.get_agents') as mock_get_agents:
+        with patch("app.api.v1.agents.agent_service.get_agents") as mock_get_agents:
             mock_get_agents.return_value = []
 
             response = client.get("/api/v1/agents")
@@ -65,7 +65,7 @@ class TestAgentsEndpoint:
 
     def test_get_agents_database_error(self, client):
         """Test agents endpoint with database error."""
-        with patch('app.api.v1.agents.agent_service.get_agents') as mock_get_agents:
+        with patch("app.api.v1.agents.agent_service.get_agents") as mock_get_agents:
             mock_get_agents.side_effect = Exception("Database error")
 
             response = client.get("/api/v1/agents")
@@ -83,11 +83,25 @@ class TestChatEndpoints:
 
         # Mock messages
         mock_messages = [
-            MagicMock(spec=Message, id=1, content="Hello", session_id=session_id, agent_id=None),
-            MagicMock(spec=Message, id=2, content="Hi there!", session_id=session_id, agent_id=1)
+            MagicMock(
+                spec=Message,
+                id=1,
+                content="Hello",
+                session_id=session_id,
+                agent_id=None,
+            ),
+            MagicMock(
+                spec=Message,
+                id=2,
+                content="Hi there!",
+                session_id=session_id,
+                agent_id=1,
+            ),
         ]
 
-        with patch('app.api.v1.chat.chat_service.get_messages_by_session') as mock_get_messages:
+        with patch(
+            "app.api.v1.chat.chat_service.get_messages_by_session"
+        ) as mock_get_messages:
             mock_get_messages.return_value = mock_messages
 
             response = client.get(f"/api/v1/chat/sessions/{session_id}/messages")
@@ -100,7 +114,9 @@ class TestChatEndpoints:
         """Test getting messages from empty session."""
         session_id = "empty-session"
 
-        with patch('app.api.v1.chat.chat_service.get_messages_by_session') as mock_get_messages:
+        with patch(
+            "app.api.v1.chat.chat_service.get_messages_by_session"
+        ) as mock_get_messages:
             mock_get_messages.return_value = []
 
             response = client.get(f"/api/v1/chat/sessions/{session_id}/messages")
@@ -111,10 +127,7 @@ class TestChatEndpoints:
     @pytest.mark.asyncio
     async def test_send_message_success(self, async_client):
         """Test successful message sending."""
-        message_data = {
-            "content": "@Assistant help me",
-            "session_id": "test-session"
-        }
+        message_data = {"content": "@Assistant help me", "session_id": "test-session"}
 
         mock_response = {
             "id": 2,
@@ -122,13 +135,17 @@ class TestChatEndpoints:
             "agent_id": 1,
             "agent_name": "Assistant",
             "session_id": "test-session",
-            "timestamp": "2024-01-01T12:00:00"
+            "timestamp": "2024-01-01T12:00:00",
         }
 
-        with patch('app.api.v1.chat.chat_service.create_message_async') as mock_create_message:
+        with patch(
+            "app.api.v1.chat.chat_service.create_message_async"
+        ) as mock_create_message:
             mock_create_message.return_value = mock_response
 
-            response = await async_client.post("/api/v1/chat/messages", json=message_data)
+            response = await async_client.post(
+                "/api/v1/chat/messages", json=message_data
+            )
 
             assert response.status_code == 200
             data = response.json()
@@ -138,15 +155,18 @@ class TestChatEndpoints:
     @pytest.mark.asyncio
     async def test_send_message_no_mention(self, async_client):
         """Test sending message without agent mention."""
-        message_data = {
-            "content": "Hello world",
-            "session_id": "test-session"
-        }
+        message_data = {"content": "Hello world", "session_id": "test-session"}
 
-        with patch('app.api.v1.chat.chat_service.create_message_async') as mock_create_message:
-            mock_create_message.side_effect = ValueError("No agent mentioned in message")
+        with patch(
+            "app.api.v1.chat.chat_service.create_message_async"
+        ) as mock_create_message:
+            mock_create_message.side_effect = ValueError(
+                "No agent mentioned in message"
+            )
 
-            response = await async_client.post("/api/v1/chat/messages", json=message_data)
+            response = await async_client.post(
+                "/api/v1/chat/messages", json=message_data
+            )
 
             assert response.status_code == 400
             data = response.json()
@@ -155,15 +175,18 @@ class TestChatEndpoints:
     @pytest.mark.asyncio
     async def test_send_message_agent_not_found(self, async_client):
         """Test sending message to non-existent agent."""
-        message_data = {
-            "content": "@NonExistent help",
-            "session_id": "test-session"
-        }
+        message_data = {"content": "@NonExistent help", "session_id": "test-session"}
 
-        with patch('app.api.v1.chat.chat_service.create_message_async') as mock_create_message:
-            mock_create_message.side_effect = ValueError("Agent 'NonExistent' not found")
+        with patch(
+            "app.api.v1.chat.chat_service.create_message_async"
+        ) as mock_create_message:
+            mock_create_message.side_effect = ValueError(
+                "Agent 'NonExistent' not found"
+            )
 
-            response = await async_client.post("/api/v1/chat/messages", json=message_data)
+            response = await async_client.post(
+                "/api/v1/chat/messages", json=message_data
+            )
 
             assert response.status_code == 400
             data = response.json()
@@ -185,10 +208,7 @@ class TestChatEndpoints:
     @pytest.mark.asyncio
     async def test_send_message_empty_content(self, async_client):
         """Test sending message with empty content."""
-        message_data = {
-            "content": "",
-            "session_id": "test-session"
-        }
+        message_data = {"content": "", "session_id": "test-session"}
 
         response = await async_client.post("/api/v1/chat/messages", json=message_data)
 
@@ -197,15 +217,16 @@ class TestChatEndpoints:
     @pytest.mark.asyncio
     async def test_send_message_server_error(self, async_client):
         """Test sending message with server error."""
-        message_data = {
-            "content": "@Assistant help",
-            "session_id": "test-session"
-        }
+        message_data = {"content": "@Assistant help", "session_id": "test-session"}
 
-        with patch('app.api.v1.chat.chat_service.create_message_async') as mock_create_message:
+        with patch(
+            "app.api.v1.chat.chat_service.create_message_async"
+        ) as mock_create_message:
             mock_create_message.side_effect = Exception("Internal server error")
 
-            response = await async_client.post("/api/v1/chat/messages", json=message_data)
+            response = await async_client.post(
+                "/api/v1/chat/messages", json=message_data
+            )
 
             assert response.status_code == 500
             data = response.json()
@@ -228,14 +249,11 @@ class TestChatEndpoints:
             "@Assistant help me",
             "Can @Coder write a function?",
             "Hey @Writer, create a story",
-            "@Researcher analyze this data"
+            "@Researcher analyze this data",
         ]
 
         for content in test_cases:
-            message_data = {
-                "content": content,
-                "session_id": "test-session"
-            }
+            message_data = {"content": content, "session_id": "test-session"}
 
             mock_response = {
                 "id": 1,
@@ -243,13 +261,17 @@ class TestChatEndpoints:
                 "agent_id": 1,
                 "agent_name": "TestAgent",
                 "session_id": "test-session",
-                "timestamp": None
+                "timestamp": None,
             }
 
-            with patch('app.api.v1.chat.chat_service.create_message_async') as mock_create_message:
+            with patch(
+                "app.api.v1.chat.chat_service.create_message_async"
+            ) as mock_create_message:
                 mock_create_message.return_value = mock_response
 
-                response = await async_client.post("/api/v1/chat/messages", json=message_data)
+                response = await async_client.post(
+                    "/api/v1/chat/messages", json=message_data
+                )
 
                 assert response.status_code == 200
 
@@ -274,7 +296,7 @@ class TestChatEndpoints:
 
         message_data = {
             "content": "@Assistant help",
-            "session_id": "concurrent-session"
+            "session_id": "concurrent-session",
         }
 
         mock_response = {
@@ -283,10 +305,12 @@ class TestChatEndpoints:
             "agent_id": 1,
             "agent_name": "Assistant",
             "session_id": "concurrent-session",
-            "timestamp": None
+            "timestamp": None,
         }
 
-        with patch('app.api.v1.chat.chat_service.create_message_async') as mock_create_message:
+        with patch(
+            "app.api.v1.chat.chat_service.create_message_async"
+        ) as mock_create_message:
             mock_create_message.return_value = mock_response
 
             # Send 3 messages concurrently

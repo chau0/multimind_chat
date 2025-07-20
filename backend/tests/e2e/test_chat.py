@@ -1,6 +1,7 @@
 import pytest
 from httpx import AsyncClient
 
+
 @pytest.mark.asyncio
 async def test_chat_flow(async_client: AsyncClient, async_test_agents):
     """Test the complete chat flow using an async client."""
@@ -17,8 +18,7 @@ async def test_chat_flow(async_client: AsyncClient, async_test_agents):
     session_id = "test_session"
 
     response = await async_client.post(
-        "/api/v1/chat/messages",
-        json={"content": message, "session_id": session_id}
+        "/api/v1/chat/messages", json={"content": message, "session_id": session_id}
     )
     assert response.status_code == 200
     result = response.json()

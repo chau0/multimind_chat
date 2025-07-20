@@ -14,12 +14,14 @@ class TestAgentService:
 
         # Mock agents
         mock_agents = [
-            MagicMock(spec=Agent, id=1, name="Assistant", description="Helpful assistant"),
+            MagicMock(
+                spec=Agent, id=1, name="Assistant", description="Helpful assistant"
+            ),
             MagicMock(spec=Agent, id=2, name="Coder", description="Programming expert"),
-            MagicMock(spec=Agent, id=3, name="Writer", description="Content creator")
+            MagicMock(spec=Agent, id=3, name="Writer", description="Content creator"),
         ]
 
-        with patch('app.services.agent_service.agent_repo') as mock_agent_repo:
+        with patch("app.services.agent_service.agent_repo") as mock_agent_repo:
             mock_agent_repo.get_agents.return_value = mock_agents
 
             # Execute
@@ -35,7 +37,7 @@ class TestAgentService:
         # Setup
         db_mock = MagicMock(spec=Session)
 
-        with patch('app.services.agent_service.agent_repo') as mock_agent_repo:
+        with patch("app.services.agent_service.agent_repo") as mock_agent_repo:
             mock_agent_repo.get_agents.return_value = []
 
             # Execute

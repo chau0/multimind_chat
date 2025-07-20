@@ -46,14 +46,14 @@ def sample_agents():
             name="Echo",
             description="Echoes back your message",
             system_prompt="You are an echo bot. Repeat what the user says.",
-            is_active=True
+            is_active=True,
         ),
         AgentCreate(
             name="Reverse",
             description="Reverses your message",
             system_prompt="You are a reverse bot. Reverse what the user says.",
-            is_active=True
-        )
+            is_active=True,
+        ),
     ]
 
 

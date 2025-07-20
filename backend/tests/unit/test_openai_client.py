@@ -1,14 +1,18 @@
 import pytest
 from unittest.mock import MagicMock, patch, AsyncMock
 from app.external.openai_client import (
-    get_openai_client, get_async_openai_client, get_model_name,
-    get_openai_response, get_openai_response_async, get_openai_response_with_messages_async
+    get_openai_client,
+    get_async_openai_client,
+    get_model_name,
+    get_openai_response,
+    get_openai_response_async,
+    get_openai_response_with_messages_async,
 )
 
 
 class TestOpenAIClient:
 
-    @patch('app.external.openai_client.settings')
+    @patch("app.external.openai_client.settings")
     def test_get_openai_client_azure(self, mock_settings):
         """Test getting Azure OpenAI client."""
         # Setup
@@ -17,7 +21,7 @@ class TestOpenAIClient:
         mock_settings.azure_openai_api_version = "2024-12-01-preview"
         mock_settings.azure_openai_endpoint = "https://test.openai.azure.com/"
 
-        with patch('app.external.openai_client.AzureOpenAI') as mock_azure_client:
+        with patch("app.external.openai_client.AzureOpenAI") as mock_azure_client:
             # Execute
             result = get_openai_client()
 
@@ -25,24 +29,24 @@ class TestOpenAIClient:
             mock_azure_client.assert_called_once_with(
                 api_key="test-azure-key",
                 api_version="2024-12-01-preview",
-                azure_endpoint="https://test.openai.azure.com/"
+                azure_endpoint="https://test.openai.azure.com/",
             )
 
-    @patch('app.external.openai_client.settings')
+    @patch("app.external.openai_client.settings")
     def test_get_openai_client_standard(self, mock_settings):
         """Test getting standard OpenAI client."""
         # Setup
         mock_settings.is_using_azure_openai = False
         mock_settings.effective_openai_api_key = "sk-test-key"
 
-        with patch('app.external.openai_client.OpenAI') as mock_openai_client:
+        with patch("app.external.openai_client.OpenAI") as mock_openai_client:
             # Execute
             result = get_openai_client()
 
             # Verify
             mock_openai_client.assert_called_once_with(api_key="sk-test-key")
 
-    @patch('app.external.openai_client.settings')
+    @patch("app.external.openai_client.settings")
     def test_get_async_openai_client_azure(self, mock_settings):
         """Test getting async Azure OpenAI client."""
         # Setup
@@ -51,7 +55,9 @@ class TestOpenAIClient:
         mock_settings.azure_openai_api_version = "2024-12-01-preview"
         mock_settings.azure_openai_endpoint = "https://test.openai.azure.com/"
 
-        with patch('app.external.openai_client.openai.AsyncAzureOpenAI') as mock_async_azure:
+        with patch(
+            "app.external.openai_client.openai.AsyncAzureOpenAI"
+        ) as mock_async_azure:
             # Execute
             result = get_async_openai_client()
 
@@ -59,24 +65,26 @@ class TestOpenAIClient:
             mock_async_azure.assert_called_once_with(
                 api_key="test-azure-key",
                 api_version="2024-12-01-preview",
-                azure_endpoint="https://test.openai.azure.com/"
+                azure_endpoint="https://test.openai.azure.com/",
             )
 
-    @patch('app.external.openai_client.settings')
+    @patch("app.external.openai_client.settings")
     def test_get_async_openai_client_standard(self, mock_settings):
         """Test getting async standard OpenAI client."""
         # Setup
         mock_settings.is_using_azure_openai = False
         mock_settings.effective_openai_api_key = "sk-test-key"
 
-        with patch('app.external.openai_client.openai.AsyncOpenAI') as mock_async_openai:
+        with patch(
+            "app.external.openai_client.openai.AsyncOpenAI"
+        ) as mock_async_openai:
             # Execute
             result = get_async_openai_client()
 
             # Verify
             mock_async_openai.assert_called_once_with(api_key="sk-test-key")
 
-    @patch('app.external.openai_client.settings')
+    @patch("app.external.openai_client.settings")
     def test_get_model_name_azure(self, mock_settings):
         """Test getting model name for Azure OpenAI."""
         # Setup
@@ -89,7 +97,7 @@ class TestOpenAIClient:
         # Verify
         assert result == "gpt-4-deployment"
 
-    @patch('app.external.openai_client.settings')
+    @patch("app.external.openai_client.settings")
     def test_get_model_name_standard(self, mock_settings):
         """Test getting model name for standard OpenAI."""
         # Setup
@@ -115,8 +123,10 @@ class TestOpenAIClient:
         mock_client = MagicMock()
         mock_client.chat.completions.create.return_value = mock_response
 
-        with patch('app.external.openai_client.get_openai_client') as mock_get_client, \
-             patch('app.external.openai_client.get_model_name') as mock_get_model:
+        with (
+            patch("app.external.openai_client.get_openai_client") as mock_get_client,
+            patch("app.external.openai_client.get_model_name") as mock_get_model,
+        ):
 
             mock_get_client.return_value = mock_client
             mock_get_model.return_value = "gpt-4"
@@ -130,7 +140,7 @@ class TestOpenAIClient:
                 model="gpt-4",
                 messages=[{"role": "user", "content": prompt}],
                 max_tokens=150,
-                temperature=0.7
+                temperature=0.7,
             )
 
     def test_get_openai_response_error_handling(self):
@@ -140,8 +150,10 @@ class TestOpenAIClient:
         mock_client = MagicMock()
         mock_client.chat.completions.create.side_effect = Exception("API Error")
 
-        with patch('app.external.openai_client.get_openai_client') as mock_get_client, \
-             patch('app.external.openai_client.get_model_name') as mock_get_model:
+        with (
+            patch("app.external.openai_client.get_openai_client") as mock_get_client,
+            patch("app.external.openai_client.get_model_name") as mock_get_model,
+        ):
 
             mock_get_client.return_value = mock_client
             mock_get_model.return_value = "gpt-4"
@@ -167,8 +179,12 @@ class TestOpenAIClient:
         mock_client = AsyncMock()
         mock_client.chat.completions.create.return_value = mock_response
 
-        with patch('app.external.openai_client.get_async_openai_client') as mock_get_client, \
-             patch('app.external.openai_client.get_model_name') as mock_get_model:
+        with (
+            patch(
+                "app.external.openai_client.get_async_openai_client"
+            ) as mock_get_client,
+            patch("app.external.openai_client.get_model_name") as mock_get_model,
+        ):
 
             mock_get_client.return_value = mock_client
             mock_get_model.return_value = "gpt-4"
@@ -182,7 +198,7 @@ class TestOpenAIClient:
                 model="gpt-4",
                 messages=[{"role": "user", "content": prompt}],
                 max_tokens=150,
-                temperature=0.7
+                temperature=0.7,
             )
 
     @pytest.mark.asyncio
@@ -193,8 +209,12 @@ class TestOpenAIClient:
         mock_client = AsyncMock()
         mock_client.chat.completions.create.side_effect = Exception("Async API Error")
 
-        with patch('app.external.openai_client.get_async_openai_client') as mock_get_client, \
-             patch('app.external.openai_client.get_model_name') as mock_get_model:
+        with (
+            patch(
+                "app.external.openai_client.get_async_openai_client"
+            ) as mock_get_client,
+            patch("app.external.openai_client.get_model_name") as mock_get_model,
+        ):
 
             mock_get_client.return_value = mock_client
             mock_get_model.return_value = "gpt-4"
@@ -210,7 +230,7 @@ class TestOpenAIClient:
         """Test successful async OpenAI response with message format."""
         messages = [
             {"role": "system", "content": "You are a helpful assistant"},
-            {"role": "user", "content": "Hello"}
+            {"role": "user", "content": "Hello"},
         ]
 
         # Mock response object
@@ -223,8 +243,12 @@ class TestOpenAIClient:
         mock_client = AsyncMock()
         mock_client.chat.completions.create.return_value = mock_response
 
-        with patch('app.external.openai_client.get_async_openai_client') as mock_get_client, \
-             patch('app.external.openai_client.get_model_name') as mock_get_model:
+        with (
+            patch(
+                "app.external.openai_client.get_async_openai_client"
+            ) as mock_get_client,
+            patch("app.external.openai_client.get_model_name") as mock_get_model,
+        ):
 
             mock_get_client.return_value = mock_client
             mock_get_model.return_value = "gpt-4"
@@ -240,7 +264,7 @@ class TestOpenAIClient:
                 max_tokens=500,
                 temperature=0.8,
                 presence_penalty=0.1,
-                frequency_penalty=0.1
+                frequency_penalty=0.1,
             )
 
     @pytest.mark.asyncio
@@ -249,10 +273,16 @@ class TestOpenAIClient:
         messages = [{"role": "user", "content": "Hello"}]
 
         mock_client = AsyncMock()
-        mock_client.chat.completions.create.side_effect = Exception("Messages API Error")
+        mock_client.chat.completions.create.side_effect = Exception(
+            "Messages API Error"
+        )
 
-        with patch('app.external.openai_client.get_async_openai_client') as mock_get_client, \
-             patch('app.external.openai_client.get_model_name') as mock_get_model:
+        with (
+            patch(
+                "app.external.openai_client.get_async_openai_client"
+            ) as mock_get_client,
+            patch("app.external.openai_client.get_model_name") as mock_get_model,
+        ):
 
             mock_get_client.return_value = mock_client
             mock_get_model.return_value = "gpt-4"
@@ -277,8 +307,10 @@ class TestOpenAIClient:
         mock_client = MagicMock()
         mock_client.chat.completions.create.return_value = mock_response
 
-        with patch('app.external.openai_client.get_openai_client') as mock_get_client, \
-             patch('app.external.openai_client.get_model_name') as mock_get_model:
+        with (
+            patch("app.external.openai_client.get_openai_client") as mock_get_client,
+            patch("app.external.openai_client.get_model_name") as mock_get_model,
+        ):
 
             mock_get_client.return_value = mock_client
             mock_get_model.return_value = "gpt-4"
