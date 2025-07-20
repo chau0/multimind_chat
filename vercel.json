@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     {
-      "src": "frontend/client/**",
+      "src": "client/**",
       "use": "@vercel/static-build",
       "config": {
         "distDir": "dist/public"
@@ -15,7 +15,7 @@
       "dest": "/index.html"
     }
   ],
-  "installCommand": "cd frontend && npm ci",
-  "buildCommand": "cd frontend && npm run build",
-  "outputDirectory": "frontend/dist/public"
+  "installCommand": "npm ci",
+  "buildCommand": " npm run build",
+  "outputDirectory": "dist/public"
 }
