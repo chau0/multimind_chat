@@ -25,7 +25,7 @@ export function useChat(sessionId: string = "default") {
 
       // Create a unique temporary ID for the optimistic message (negative to avoid conflicts)
       const optimisticId = -Date.now();
-      
+
       // Optimistically update with user message
       const optimisticMessage: Message = {
         id: optimisticId, // Unique temporary ID (negative number)
@@ -69,7 +69,7 @@ export function useChat(sessionId: string = "default") {
     // Find typing agent for simulation
     if (mentions.length > 0) {
       const agentsQuery = queryClient.getQueryData<Agent[]>(["/api/v1/agents"]);
-      const firstMentionedAgent = agentsQuery?.find(agent => 
+      const firstMentionedAgent = agentsQuery?.find(agent =>
         mentions.some(mention => mention.toLowerCase() === agent.name.toLowerCase())
       );
       if (firstMentionedAgent) {

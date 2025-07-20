@@ -1,7 +1,9 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Text, DateTime
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
+
 from app.utils.db import Base
+
 
 class Agent(Base):
     __tablename__ = "agents"
@@ -14,10 +16,14 @@ class Agent(Base):
     avatar = Column(String(10))  # Emoji or short avatar string
     color = Column(String(100))  # CSS color classes
 
+
 class ChatSession(Base):
     __tablename__ = "chat_sessions"
 
-    id = Column(String(255), primary_key=True, index=True)  # Limited length for indexing
+    id = Column(
+        String(255), primary_key=True, index=True
+    )  # Limited length for indexing
+
 
 class Message(Base):
     __tablename__ = "messages"

@@ -152,4 +152,3 @@ for update in response:
         print(update.choices[0].delta.content or "", end="")
 
 client.close()
-

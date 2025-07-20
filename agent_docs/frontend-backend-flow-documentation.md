@@ -42,7 +42,7 @@ main.py → FastAPI app → CORS middleware → Route registration
 2. **CORS middleware** configured for cross-origin requests
 3. **Route registration** includes:
    - `/api/v1/health` - Health check endpoints
-   - `/api/v1/agents` - Agent management endpoints  
+   - `/api/v1/agents` - Agent management endpoints
    - `/api/v1/chat` - Chat messaging endpoints
 
 ### 2. Initial Data Loading
@@ -76,7 +76,7 @@ Accept: application/json
   {
     "id": 1,
     "name": "assistant",
-    "displayName": "AI Assistant", 
+    "displayName": "AI Assistant",
     "description": "General purpose AI assistant",
     "color": "#3B82F6",
     "avatar": "🤖",
@@ -134,7 +134,7 @@ const optimisticMessage: Message = {
 };
 
 // Add to UI immediately
-queryClient.setQueryData([`/api/v1/chat/sessions/${sessionId}/messages`], 
+queryClient.setQueryData([`/api/v1/chat/sessions/${sessionId}/messages`],
   (old = []) => [...old, optimisticMessage]
 );
 ```
@@ -233,7 +233,7 @@ FastAPI Router → Dependency Injection → Service Layer → Repository Layer �
 onError: (error, variables, context) => {
   // Rollback optimistic update
   if (context?.previousMessages) {
-    queryClient.setQueryData([`/api/v1/chat/sessions/${sessionId}/messages`], 
+    queryClient.setQueryData([`/api/v1/chat/sessions/${sessionId}/messages`],
       context.previousMessages
     );
   }

@@ -32,7 +32,7 @@ pip install uv
 ```
 
 ### 2. Install Microsoft ODBC Driver 18 for SQL Server
-   
+
 **Ubuntu/Debian:**
 ```bash
 curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
@@ -141,7 +141,7 @@ uv run pytest --cov=app --cov-report=html --cov-report=term
 
 # Run specific test types
 uv run pytest tests/unit/          # Unit tests only
-uv run pytest tests/integration/   # Integration tests only  
+uv run pytest tests/integration/   # Integration tests only
 uv run pytest tests/e2e/          # End-to-end tests only
 
 # Run tests with verbose output
@@ -349,24 +349,54 @@ make requirements
 make clean
 ```
 
-## Code Quality
+## Code Quality & Pre-commit Hooks
 
+### Setup Pre-commit Hooks
+```bash
+# Automated setup (recommended)
+./scripts/setup-precommit.sh
+
+# Manual setup
+pip install pre-commit
+pre-commit install
+```
+
+### Code Formatting & Linting
 ```bash
 # Format code
-make format
+black .                   # Format Python code
+isort .                   # Sort imports
+flake8 .                  # Lint code
+mypy .                    # Type checking
+bandit -r .               # Security scanning
 
-# Run all linting tools
-make lint
+# Run all pre-commit hooks manually
+pre-commit run --all-files
 
-# Run both linting and tests
-make check
+# Or use make commands
+make format               # Format code
+make lint                 # Run all linting tools
+make check                # Run both linting and tests
 ```
+
+### What Pre-commit Checks
+- ✅ **Black**: Code formatting (88 char line length)
+- ✅ **isort**: Import sorting and organization
+- ✅ **Flake8**: PEP 8 compliance and error detection
+- ✅ **MyPy**: Static type checking
+- ✅ **Bandit**: Security vulnerability scanning
+- ✅ **detect-secrets**: Prevents committing credentials
+- ✅ **File quality**: Trailing whitespace, file endings
 
 The project uses:
 - **black** - Code formatting
 - **isort** - Import sorting
 - **flake8** - Linting
 - **mypy** - Static type checking
+- **bandit** - Security scanning
+- **detect-secrets** - Secret detection
+
+See [docs/PRE_COMMIT_SETUP.md](docs/PRE_COMMIT_SETUP.md) for detailed setup instructions.
 
 ## API Endpoints
 

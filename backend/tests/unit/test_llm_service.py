@@ -5,7 +5,7 @@ from app.models.chat import Agent
 
 
 class TestLLMService:
-    
+
     @pytest.mark.asyncio
     async def test_generate_response_async_success(self):
         """Test successful response generation with agent context."""
@@ -14,20 +14,22 @@ class TestLLMService:
         mock_agent.name = "Assistant"
         mock_agent.description = "Helpful assistant"
         mock_agent.system_prompt = "You are a helpful AI assistant"
-        
+
         context = ["User: Hello", "Assistant: Hi there!"]
         user_message = "How are you?"
-        
-        with patch('app.services.llm_service.get_openai_response_with_messages_async') as mock_openai:
+
+        with patch(
+            "app.services.llm_service.get_openai_response_with_messages_async"
+        ) as mock_openai:
             mock_openai.return_value = "I'm doing well, thank you for asking!"
-            
+
             # Execute
             result = await generate_response_async(mock_agent, context, user_message)
-            
+
             # Verify
             assert result == "I'm doing well, thank you for asking!"
             mock_openai.assert_called_once()
-            
+
             # Verify the messages structure
             call_args = mock_openai.call_args[0][0]
             assert len(call_args) == 4  # system + 2 context + user message
@@ -44,19 +46,21 @@ class TestLLMService:
         mock_agent.name = "Coder"
         mock_agent.description = "Programming expert"
         mock_agent.system_prompt = None
-        
+
         context = []
         user_message = "Write a function"
-        
-        with patch('app.services.llm_service.get_openai_response_with_messages_async') as mock_openai:
+
+        with patch(
+            "app.services.llm_service.get_openai_response_with_messages_async"
+        ) as mock_openai:
             mock_openai.return_value = "Here's a function for you"
-            
+
             # Execute
             result = await generate_response_async(mock_agent, context, user_message)
-            
+
             # Verify
             assert result == "Here's a function for you"
-            
+
             # Verify fallback system prompt
             call_args = mock_openai.call_args[0][0]
             assert call_args[0]["content"] == "You are Coder, Programming expert"
@@ -69,17 +73,19 @@ class TestLLMService:
         mock_agent.name = "Assistant"
         mock_agent.description = "Helpful assistant"
         mock_agent.system_prompt = "You are helpful"
-        
+
         # Create 10 context messages
         context = [f"User: Message {i}" for i in range(10)]
         user_message = "Current message"
-        
-        with patch('app.services.llm_service.get_openai_response_with_messages_async') as mock_openai:
+
+        with patch(
+            "app.services.llm_service.get_openai_response_with_messages_async"
+        ) as mock_openai:
             mock_openai.return_value = "Response"
-            
+
             # Execute
             await generate_response_async(mock_agent, context, user_message)
-            
+
             # Verify only last 8 context messages + system + current = 10 total
             call_args = mock_openai.call_args[0][0]
             assert len(call_args) == 10  # system + 8 context + current
@@ -92,16 +98,18 @@ class TestLLMService:
         mock_agent.name = "Assistant"
         mock_agent.description = "Helpful assistant"
         mock_agent.system_prompt = "You are helpful"
-        
+
         context = []
         user_message = "Hello"
-        
-        with patch('app.services.llm_service.get_openai_response_with_messages_async') as mock_openai:
+
+        with patch(
+            "app.services.llm_service.get_openai_response_with_messages_async"
+        ) as mock_openai:
             mock_openai.side_effect = Exception("API Error")
-            
+
             # Execute
             result = await generate_response_async(mock_agent, context, user_message)
-            
+
             # Verify fallback response
             assert "I apologize, but I'm having trouble" in result
             assert "Assistant" in result
@@ -114,7 +122,7 @@ class TestLLMService:
         mock_agent.name = "Assistant"
         mock_agent.description = "Helpful assistant"
         mock_agent.system_prompt = "You are helpful"
-        
+
         context = [
             "User: Hello there",
             "Assistant: Hi! How can I help?",
@@ -125,23 +133,27 @@ class TestLLMService:
             "Agent: ",  # Empty response should be ignored
         ]
         user_message = "Continue"
-        
-        with patch('app.services.llm_service.get_openai_response_with_messages_async') as mock_openai:
+
+        with patch(
+            "app.services.llm_service.get_openai_response_with_messages_async"
+        ) as mock_openai:
             mock_openai.return_value = "Continuing..."
-            
+
             # Execute
             await generate_response_async(mock_agent, context, user_message)
-            
+
             # Verify message structure
             call_args = mock_openai.call_args[0][0]
-            
+
             # Should have: system + valid user/assistant messages + current
             user_messages = [msg for msg in call_args if msg["role"] == "user"]
-            assistant_messages = [msg for msg in call_args if msg["role"] == "assistant"]
-            
+            assistant_messages = [
+                msg for msg in call_args if msg["role"] == "assistant"
+            ]
+
             assert len(user_messages) == 3  # 2 from context + current
             assert len(assistant_messages) == 3  # 3 from context
-            
+
             # Verify content parsing
             assert "Hello there" in user_messages[0]["content"]
             assert "Hi! How can I help?" in assistant_messages[0]["content"]
@@ -149,13 +161,13 @@ class TestLLMService:
     def test_get_response_sync(self):
         """Test synchronous response generation (legacy method)."""
         prompt = "Hello world"
-        
-        with patch('app.services.llm_service.get_openai_response') as mock_openai:
+
+        with patch("app.services.llm_service.get_openai_response") as mock_openai:
             mock_openai.return_value = "Hello back!"
-            
+
             # Execute
             result = get_response(prompt)
-            
+
             # Verify
             assert result == "Hello back!"
             mock_openai.assert_called_once_with(prompt)
@@ -168,19 +180,21 @@ class TestLLMService:
         mock_agent.name = "Writer"
         mock_agent.description = "Creative writer"
         mock_agent.system_prompt = "You are a creative writer"
-        
+
         context = []
         user_message = "Write a story"
-        
-        with patch('app.services.llm_service.get_openai_response_with_messages_async') as mock_openai:
+
+        with patch(
+            "app.services.llm_service.get_openai_response_with_messages_async"
+        ) as mock_openai:
             mock_openai.return_value = "Once upon a time..."
-            
+
             # Execute
             result = await generate_response_async(mock_agent, context, user_message)
-            
+
             # Verify
             assert result == "Once upon a time..."
-            
+
             # Should only have system message + user message
             call_args = mock_openai.call_args[0][0]
             assert len(call_args) == 2

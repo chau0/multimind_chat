@@ -9,14 +9,14 @@ test.describe('Performance Tests', () => {
   test('should load chat page within performance budget', async ({ page }) => {
     // Start performance monitoring
     await page.goto('/', { waitUntil: 'networkidle' });
-    
+
     // Measure Core Web Vitals
     const metrics = await page.evaluate(() => {
       return new Promise((resolve) => {
         new PerformanceObserver((list) => {
           const entries = list.getEntries();
           const vitals = {};
-          
+
           entries.forEach((entry) => {
             if (entry.name === 'first-contentful-paint') {
               vitals.fcp = entry.startTime;
@@ -28,15 +28,15 @@ test.describe('Performance Tests', () => {
               vitals.cls = (vitals.cls || 0) + entry.value;
             }
           });
-          
+
           // Also get navigation timing
           const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
           vitals.domContentLoaded = navigation.domContentLoadedEventEnd - navigation.navigationStart;
           vitals.loadComplete = navigation.loadEventEnd - navigation.navigationStart;
-          
+
           resolve(vitals);
         }).observe({ entryTypes: ['paint', 'largest-contentful-paint', 'layout-shift'] });
-        
+
         // Fallback timeout
         setTimeout(() => resolve({}), 5000);
       });
@@ -66,19 +66,19 @@ test.describe('Performance Tests', () => {
 
     // Measure time to send 5 rapid messages
     const startTime = Date.now();
-    
+
     for (let i = 1; i <= 5; i++) {
       await messageInput.fill(`Rapid message ${i}`);
       await sendButton.click();
       await expect(page.locator(`text=Rapid message ${i}`)).toBeVisible();
     }
-    
+
     const endTime = Date.now();
     const totalTime = endTime - startTime;
-    
+
     // Should handle 5 messages in under 10 seconds
     expect(totalTime).toBeLessThan(10000);
-    
+
     // All messages should be visible
     for (let i = 1; i <= 5; i++) {
       await expect(page.locator(`text=Rapid message ${i}`)).toBeVisible();
@@ -121,9 +121,9 @@ test.describe('Performance Tests', () => {
 
   test('should load agents efficiently', async ({ page }) => {
     const startTime = Date.now();
-    
+
     await page.goto('/');
-    
+
     // Wait for agents to load
     await page.waitForFunction(() => {
       const loadingElements = document.querySelectorAll('*');
@@ -132,13 +132,13 @@ test.describe('Performance Tests', () => {
       }
       return true;
     });
-    
+
     const endTime = Date.now();
     const loadTime = endTime - startTime;
-    
+
     // Agents should load within 5 seconds
     expect(loadTime).toBeLessThan(5000);
-    
+
     // Should show agent selector
     await expect(page.locator('button:has-text("Assistant"), button:has-text("AI Assistant")').first()).toBeVisible();
   });
@@ -148,23 +148,23 @@ test.describe('Performance Tests', () => {
     await page.waitForLoadState('networkidle');
 
     const agentButton = page.locator('button:has-text("Assistant"), button:has-text("AI Assistant")').first();
-    
+
     // Measure agent switching time
     const startTime = Date.now();
-    
+
     // Open dropdown
     await agentButton.click();
     await expect(page.locator('text=Available Agents')).toBeVisible();
-    
+
     // Select different agent
     await page.locator('text=Code Expert, text=Coder').first().click();
-    
+
     // Wait for selection to complete
     await expect(page.locator('button:has-text("Coder"), button:has-text("Code Expert")').first()).toBeVisible();
-    
+
     const endTime = Date.now();
     const switchTime = endTime - startTime;
-    
+
     // Agent switching should be fast (under 2 seconds)
     expect(switchTime).toBeLessThan(2000);
   });
@@ -192,7 +192,7 @@ test.describe('Performance Tests', () => {
 
     // Should eventually show response (with extended timeout)
     await expect(page.locator('text=Test message with delay')).toBeVisible();
-    
+
     // Typing indicator should disappear
     await expect(page.locator('text=typing, text=is typing').first()).not.toBeVisible({ timeout: 10000 });
   });

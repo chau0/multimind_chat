@@ -46,9 +46,9 @@ export const waitForBackend = async (maxAttempts = 30, interval = 1000) => {
 export const startBackendForTests = async () => {
   const { spawn } = await import('child_process')
   const path = await import('path')
-  
+
   console.log('🚀 Starting backend for integration tests...')
-  
+
   // Start backend process
   backendProcess = spawn('python', ['-m', 'uvicorn', 'app.main:app', '--host', '0.0.0.0', '--port', '8001'], {
     cwd: path.resolve(process.cwd(), '../backend'),
@@ -80,7 +80,7 @@ export const stopBackendForTests = async () => {
   if (backendProcess) {
     console.log('🛑 Stopping backend server...')
     backendProcess.kill('SIGTERM')
-    
+
     // Wait for graceful shutdown
     await new Promise(resolve => {
       backendProcess.on('exit', resolve)
@@ -89,7 +89,7 @@ export const stopBackendForTests = async () => {
         resolve(undefined)
       }, 5000)
     })
-    
+
     backendProcess = null
     console.log('✅ Backend server stopped')
   }

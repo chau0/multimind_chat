@@ -86,24 +86,24 @@ describe('useChat', () => {
 
   it('fetches messages on mount', async () => {
     vi.mocked(chatService.getMessages).mockResolvedValue(mockMessages)
-    
+
     const { result } = renderHook(() => useChat('test-session'), { wrapper: createWrapper() })
-    
+
     expect(result.current.isLoading).toBe(true)
-    
+
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false)
     })
-    
+
     expect(result.current.messages).toEqual(mockMessages)
     expect(chatService.getMessages).toHaveBeenCalledWith('test-session')
   })
 
   it('uses default session id when not provided', async () => {
     vi.mocked(chatService.getMessages).mockResolvedValue([])
-    
+
     renderHook(() => useChat(), { wrapper: createWrapper() })
-    
+
     await waitFor(() => {
       expect(chatService.getMessages).toHaveBeenCalledWith('default')
     })
@@ -112,17 +112,17 @@ describe('useChat', () => {
   it('sends message successfully', async () => {
     vi.mocked(chatService.getMessages).mockResolvedValue(mockMessages)
     vi.mocked(chatService.sendMessage).mockResolvedValue(mockSendMessageResponse)
-    
+
     const { result } = renderHook(() => useChat('test-session'), { wrapper: createWrapper() })
-    
+
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false)
     })
-    
+
     await act(async () => {
       await result.current.sendMessage('Test message', [])
     })
-    
+
     expect(chatService.sendMessage).toHaveBeenCalledWith({
       content: 'Test message',
       isUser: true,
@@ -133,27 +133,27 @@ describe('useChat', () => {
 
   it('handles optimistic updates', async () => {
     vi.mocked(chatService.getMessages).mockResolvedValue(mockMessages)
-    vi.mocked(chatService.sendMessage).mockImplementation(() => 
+    vi.mocked(chatService.sendMessage).mockImplementation(() =>
       new Promise(resolve => setTimeout(() => resolve(mockSendMessageResponse), 100))
     )
-    
+
     const { result } = renderHook(() => useChat('test-session'), { wrapper: createWrapper() })
-    
+
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false)
     })
-    
+
     const initialMessageCount = result.current.messages.length
-    
+
     act(() => {
       result.current.sendMessage('Test message', [])
     })
-    
+
     // Should immediately show optimistic message
     expect(result.current.messages.length).toBe(initialMessageCount + 1)
     expect(result.current.messages[result.current.messages.length - 1].content).toBe('Test message')
     expect(result.current.isSending).toBe(true)
-    
+
     await waitFor(() => {
       expect(result.current.isSending).toBe(false)
     })
@@ -162,17 +162,17 @@ describe('useChat', () => {
   it('sets typing agent when mentions are present', async () => {
     vi.mocked(chatService.getMessages).mockResolvedValue(mockMessages)
     vi.mocked(chatService.sendMessage).mockResolvedValue(mockSendMessageResponse)
-    
+
     const { result } = renderHook(() => useChat('test-session'), { wrapper: createWrapper() })
-    
+
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false)
     })
-    
+
     await act(async () => {
       await result.current.sendMessage('Hello @Coder', ['Coder'])
     })
-    
+
     // Typing agent should be cleared after response
     expect(result.current.typingAgent).toBe(null)
   })
@@ -180,13 +180,13 @@ describe('useChat', () => {
   it('handles send message error', async () => {
     vi.mocked(chatService.getMessages).mockResolvedValue(mockMessages)
     vi.mocked(chatService.sendMessage).mockRejectedValue(new Error('Send failed'))
-    
+
     const { result } = renderHook(() => useChat('test-session'), { wrapper: createWrapper() })
-    
+
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false)
     })
-    
+
     await act(async () => {
       try {
         await result.current.sendMessage('Test message', [])
@@ -194,41 +194,41 @@ describe('useChat', () => {
         // Expected to throw
       }
     })
-    
+
     expect(result.current.error).toBeInstanceOf(Error)
     expect(result.current.typingAgent).toBe(null)
   })
 
   it('does not send empty messages', async () => {
     vi.mocked(chatService.getMessages).mockResolvedValue([])
-    
+
     const { result } = renderHook(() => useChat(), { wrapper: createWrapper() })
-    
+
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false)
     })
-    
+
     await act(async () => {
       await result.current.sendMessage('   ', [])
     })
-    
+
     expect(chatService.sendMessage).not.toHaveBeenCalled()
   })
 
   it('trims message content before sending', async () => {
     vi.mocked(chatService.getMessages).mockResolvedValue([])
     vi.mocked(chatService.sendMessage).mockResolvedValue(mockSendMessageResponse)
-    
+
     const { result } = renderHook(() => useChat(), { wrapper: createWrapper() })
-    
+
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false)
     })
-    
+
     await act(async () => {
       await result.current.sendMessage('  Test message  ', [])
     })
-    
+
     expect(chatService.sendMessage).toHaveBeenCalledWith({
       content: 'Test message',
       isUser: true,

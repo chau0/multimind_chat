@@ -78,7 +78,7 @@ describe('ChatWindow', () => {
     } as any)
 
     render(<ChatWindow />)
-    
+
     expect(screen.getByText('Loading messages...')).toBeInTheDocument()
   })
 
@@ -93,7 +93,7 @@ describe('ChatWindow', () => {
     } as any)
 
     render(<ChatWindow />)
-    
+
     expect(screen.getByText('Welcome to Multimind!')).toBeInTheDocument()
     expect(screen.getByText('@Coder')).toBeInTheDocument()
     expect(screen.getByText('@Writer')).toBeInTheDocument()
@@ -111,7 +111,7 @@ describe('ChatWindow', () => {
     } as any)
 
     render(<ChatWindow />)
-    
+
     expect(screen.getByText('Hello, how can I help you?')).toBeInTheDocument()
     expect(screen.getByText('I need help with coding')).toBeInTheDocument()
     expect(screen.getByText('Sure! I can help you with that.')).toBeInTheDocument()
@@ -128,7 +128,7 @@ describe('ChatWindow', () => {
     } as any)
 
     render(<ChatWindow />)
-    
+
     expect(screen.getByText('Code Expert is typing')).toBeInTheDocument()
   })
 
@@ -143,7 +143,7 @@ describe('ChatWindow', () => {
     } as any)
 
     render(<ChatWindow />)
-    
+
     // Check that agent names are displayed correctly
     expect(screen.getByText('AI Assistant')).toBeInTheDocument()
     expect(screen.getByText('Code Expert')).toBeInTheDocument()
@@ -171,7 +171,7 @@ describe('ChatWindow', () => {
     } as any)
 
     render(<ChatWindow />)
-    
+
     expect(screen.getByText('Message from unknown agent')).toBeInTheDocument()
     expect(screen.getByText('Unknown')).toBeInTheDocument()
   })

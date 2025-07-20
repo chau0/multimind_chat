@@ -201,7 +201,7 @@ The logging system is designed to integrate well with:
 
 ## Best Practices
 
-1. **Use Appropriate Log Levels**: 
+1. **Use Appropriate Log Levels**:
    - DEBUG: Detailed diagnostic information
    - INFO: General application flow
    - WARNING: Potential issues

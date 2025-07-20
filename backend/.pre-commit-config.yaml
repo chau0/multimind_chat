@@ -1,0 +1,67 @@
+# Simplified Pre-commit configuration for Backend
+# Focuses on the core linting issues that caused deployment failures
+
+repos:
+  # General file checks (backend files only)
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+        files: ^backend/.*
+      - id: end-of-file-fixer
+        files: ^backend/.*
+      - id: check-yaml
+        files: ^backend/.*\.ya?ml$
+      - id: check-json
+        files: ^backend/.*\.json$
+      - id: check-toml
+        files: ^backend/.*\.toml$
+
+  # Python Backend Checks - EXACTLY matching CI/CD
+  - repo: https://github.com/psf/black
+    rev: 24.1.1
+    hooks:
+      - id: black
+        files: ^backend/app/.*\.py$
+        args: [--check]  # Matches CI: black --check app/
+
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        files: ^backend/app/.*\.py$
+        args: ["--profile", "black", "--check-only"]  # Matches CI: isort --check-only app/
+
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.0.0
+    hooks:
+      - id: flake8
+        files: ^backend/app/.*\.py$
+        args:
+          - --max-line-length=88
+          - --extend-ignore=E203,W503
+          # Matches CI: flake8 app/ --max-line-length=88 --extend-ignore=E203,W503
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.8.0
+    hooks:
+      - id: mypy
+        files: ^backend/app/.*\.py$
+        additional_dependencies:
+          - types-requests
+          - pydantic
+        args: [--ignore-missing-imports]  # Matches CI: mypy app/ --ignore-missing-imports
+
+# Configuration
+default_language_version:
+  python: python3.12
+
+# Only process backend files
+files: ^backend/.*
+exclude: |
+  (?x)^(
+    backend/__pycache__/.*|
+    backend/\.venv/.*|
+    backend/.*\.pyc|
+    backend/migrations/versions/.*\.py
+  )$

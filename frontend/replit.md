@@ -94,7 +94,7 @@ Preferred communication style: Simple, everyday language.
 ### Production Configuration
 - **Database**: PostgreSQL with connection pooling via @neondatabase/serverless
 - **Environment Variables**: DATABASE_URL for database connection
-- **Build Output**: 
+- **Build Output**:
   - Frontend: Static files in `dist/public`
   - Backend: Bundled server in `dist/index.js`
 - **Deployment**: Single Node.js process serving both API and static files

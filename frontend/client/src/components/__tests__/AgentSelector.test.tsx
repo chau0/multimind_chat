@@ -49,30 +49,30 @@ describe('AgentSelector', () => {
     } as any)
 
     render(<AgentSelector />)
-    
+
     expect(screen.getByText('Loading...')).toBeInTheDocument()
   })
 
   it('renders default agent when no agent is selected', () => {
     render(<AgentSelector />)
-    
+
     expect(screen.getByText('AI Assistant')).toBeInTheDocument()
     expect(screen.getByText('AI')).toBeInTheDocument()
   })
 
   it('renders selected agent', () => {
     render(<AgentSelector selectedAgent={mockAgents[1]} />)
-    
+
     expect(screen.getByText('Code Expert')).toBeInTheDocument()
     expect(screen.getByText('CE')).toBeInTheDocument()
   })
 
   it('opens dropdown when clicked', async () => {
     render(<AgentSelector />)
-    
+
     const button = screen.getByRole('button')
     fireEvent.click(button)
-    
+
     await waitFor(() => {
       expect(screen.getByText('Available Agents')).toBeInTheDocument()
       expect(screen.getByText('AI Assistant')).toBeInTheDocument()
@@ -83,32 +83,32 @@ describe('AgentSelector', () => {
   it('calls onAgentSelect when agent is selected', async () => {
     const onAgentSelect = vi.fn()
     render(<AgentSelector onAgentSelect={onAgentSelect} />)
-    
+
     const button = screen.getByRole('button')
     fireEvent.click(button)
-    
+
     await waitFor(() => {
       const coderOption = screen.getByText('Code Expert')
       fireEvent.click(coderOption)
     })
-    
+
     expect(onAgentSelect).toHaveBeenCalledWith(mockAgents[1])
   })
 
   it('closes dropdown when backdrop is clicked', async () => {
     render(<AgentSelector />)
-    
+
     const button = screen.getByRole('button')
     fireEvent.click(button)
-    
+
     await waitFor(() => {
       expect(screen.getByText('Available Agents')).toBeInTheDocument()
     })
-    
+
     // Click backdrop
     const backdrop = document.querySelector('.fixed.inset-0')
     fireEvent.click(backdrop!)
-    
+
     await waitFor(() => {
       expect(screen.queryByText('Available Agents')).not.toBeInTheDocument()
     })

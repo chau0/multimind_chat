@@ -18,14 +18,14 @@ describe('queryClient', () => {
       } as Response)
 
       const result = await apiRequest('GET', '/test')
-      
+
       expect(fetch).toHaveBeenCalledWith('/test', {
         method: 'GET',
         body: undefined,
         credentials: 'include',
         headers: {},
       })
-      
+
       const data = await result.json()
       expect(data).toEqual(mockResponse)
     })
@@ -33,14 +33,14 @@ describe('queryClient', () => {
     it('makes POST request with body correctly', async () => {
       const mockResponse = { success: true }
       const requestBody = { message: 'test' }
-      
+
       vi.mocked(fetch).mockResolvedValue({
         ok: true,
         json: () => Promise.resolve(mockResponse),
       } as Response)
 
       const result = await apiRequest('POST', '/test', requestBody)
-      
+
       expect(fetch).toHaveBeenCalledWith('/test', {
         method: 'POST',
         body: JSON.stringify(requestBody),
@@ -49,7 +49,7 @@ describe('queryClient', () => {
           'Content-Type': 'application/json',
         },
       })
-      
+
       const data = await result.json()
       expect(data).toEqual(mockResponse)
     })

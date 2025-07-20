@@ -35,7 +35,7 @@ A sophisticated multi-persona AI chat web application that allows users to summo
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+ 
+- Node.js 18+
 - npm or yarn
 
 ### Installation
@@ -149,7 +149,7 @@ frontend/
    ```bash
    # Check TypeScript errors
    npm run check
-   
+
    # Clear build cache
    rm -rf dist
    npm run build

@@ -22,7 +22,7 @@ export default function ChatPage() {
             <h1 className="text-xl sm:text-2xl font-bold text-gray-900">🤖 Multi-Agent Chat</h1>
             <span className="hidden sm:inline-block px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">v1.0</span>
           </div>
-          
+
           <AgentSelector
             selectedAgent={selectedAgent}
             onAgentSelect={setSelectedAgent}
@@ -33,7 +33,7 @@ export default function ChatPage() {
       {/* Main Chat Area */}
       <main className="flex-1 flex flex-col min-h-0">
         <ChatWindow />
-        <ChatInput 
+        <ChatInput
           onSendMessage={handleSendMessage}
           disabled={isSending}
           shouldFocus={shouldFocusInput}

@@ -14,21 +14,21 @@ jobs:
     defaults:
       run:
         working-directory: ./backend
-    
+
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Set up Python 3.11
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
-    
+
     - name: Install uv
       run: pip install uv
-    
+
     - name: Install dependencies
       run: uv pip install --system -r requirements/dev.txt
-    
+
     - name: Run linting
       run: |
         uv pip install --system flake8 black isort mypy
@@ -36,19 +36,19 @@ jobs:
         black --check app/
         isort --check-only app/
         mypy app/ --ignore-missing-imports
-    
+
     - name: Run tests
       run: |
         export ENVIRONMENT=test
         export DATABASE_URL=sqlite:///test.db
         export OPENAI_API_KEY=test-key
         pytest tests/ -v --cov=app --cov-report=term-missing
-    
+
   deploy:
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
-    
+
     steps:
     - name: Deploy to Render
       run: |

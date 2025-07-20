@@ -3,18 +3,18 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { QueryClientProvider } from '@tanstack/react-query'
 import ChatPage from '@/pages/chat'
-import { 
-  setupIntegrationTests, 
-  createIntegrationQueryClient, 
-  resetTestData, 
-  seedTestData 
+import {
+  setupIntegrationTests,
+  createIntegrationQueryClient,
+  resetTestData,
+  seedTestData
 } from '../integration-setup'
 import React from 'react'
 
 // Full end-to-end integration tests
 describe('Full Flow Integration Tests', () => {
   setupIntegrationTests()
-  
+
   let queryClient: any
 
   beforeEach(async () => {
@@ -90,9 +90,9 @@ describe('Full Flow Integration Tests', () => {
     // 4. Type message with mention
     const user = userEvent.setup()
     const input = screen.getByPlaceholderText(/Type your message/)
-    
+
     await user.type(input, 'Hello @')
-    
+
     // 5. Should show mention suggestions
     await waitFor(() => {
       expect(screen.getByText('Mention Agent')).toBeInTheDocument()
@@ -267,7 +267,7 @@ describe('Full Flow Integration Tests', () => {
     // Check initial UI state
     const input = screen.getByPlaceholderText(/Type your message/)
     const sendButton = screen.getByRole('button', { name: /send/i })
-    
+
     expect(input).toBeEnabled()
     expect(sendButton).toBeEnabled()
 

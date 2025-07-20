@@ -5,18 +5,18 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { ChatInput } from '@/components/ChatInput'
 import { ChatWindow } from '@/components/ChatWindow'
 import { useChat } from '@/hooks/useChat'
-import { 
-  setupIntegrationTests, 
-  createIntegrationQueryClient, 
-  resetTestData, 
-  seedTestData 
+import {
+  setupIntegrationTests,
+  createIntegrationQueryClient,
+  resetTestData,
+  seedTestData
 } from '../integration-setup'
 import React from 'react'
 
 // Integration tests for Chat functionality
 describe('Chat Integration Tests', () => {
   setupIntegrationTests()
-  
+
   let queryClient: any
 
   beforeEach(async () => {
@@ -36,25 +36,25 @@ describe('Chat Integration Tests', () => {
   it('should send and receive messages through real API', async () => {
     const TestChatComponent = () => {
       const { messages, sendMessage, isLoading, isSending } = useChat('integration-test-session')
-      
+
       const handleSend = async (content: string, mentions: string[]) => {
         await sendMessage(content, mentions)
       }
-      
+
       return (
         <div>
           <div data-testid="message-count">{messages.length} messages</div>
           <div data-testid="loading-state">{isLoading ? 'loading' : 'ready'}</div>
           <div data-testid="sending-state">{isSending ? 'sending' : 'idle'}</div>
-          
+
           {messages.map((message, index) => (
             <div key={index} data-testid={`message-${index}`}>
               <span data-testid={`message-content-${index}`}>{message.content}</span>
               <span data-testid={`message-user-${index}`}>{message.isUser ? 'user' : 'agent'}</span>
             </div>
           ))}
-          
-          <button 
+
+          <button
             onClick={() => handleSend('Hello from integration test', [])}
             data-testid="send-test-message"
           >
@@ -92,7 +92,7 @@ describe('Chat Integration Tests', () => {
     // Should have user message
     const userMessage = screen.getByTestId('message-content-0')
     expect(userMessage).toHaveTextContent('Hello from integration test')
-    
+
     const userType = screen.getByTestId('message-user-0')
     expect(userType).toHaveTextContent('user')
   })
@@ -123,11 +123,11 @@ describe('Chat Integration Tests', () => {
   it('should handle mentions in real chat flow', async () => {
     const TestMentionComponent = () => {
       const { messages, sendMessage } = useChat('mention-test-session')
-      
+
       const handleSendWithMention = async () => {
         await sendMessage('Hello @Assistant, can you help me?', ['Assistant'])
       }
-      
+
       return (
         <div>
           <div data-testid="message-list">
@@ -158,20 +158,20 @@ describe('Chat Integration Tests', () => {
 
   it('should maintain session state across interactions', async () => {
     const sessionId = 'persistent-session-test'
-    
+
     const TestSessionComponent = () => {
       const { messages, sendMessage } = useChat(sessionId)
-      
+
       return (
         <div>
           <div data-testid="session-messages">{messages.length}</div>
-          <button 
+          <button
             onClick={() => sendMessage('Session message 1', [])}
             data-testid="send-first"
           >
             Send First
           </button>
-          <button 
+          <button
             onClick={() => sendMessage('Session message 2', [])}
             data-testid="send-second"
           >
@@ -185,7 +185,7 @@ describe('Chat Integration Tests', () => {
 
     // Send first message
     fireEvent.click(screen.getByTestId('send-first'))
-    
+
     await waitFor(() => {
       const count = parseInt(screen.getByTestId('session-messages').textContent || '0')
       expect(count).toBeGreaterThan(0)
@@ -195,7 +195,7 @@ describe('Chat Integration Tests', () => {
 
     // Send second message
     fireEvent.click(screen.getByTestId('send-second'))
-    
+
     await waitFor(() => {
       const count = parseInt(screen.getByTestId('session-messages').textContent || '0')
       expect(count).toBeGreaterThan(firstCount)
@@ -214,7 +214,7 @@ describe('Chat Integration Tests', () => {
 
     const TestErrorComponent = () => {
       const { sendMessage, error } = useChat('error-test-session')
-      
+
       const handleSend = async () => {
         try {
           await sendMessage('This should fail', [])
@@ -222,7 +222,7 @@ describe('Chat Integration Tests', () => {
           // Error handled by hook
         }
       }
-      
+
       return (
         <div>
           <div data-testid="error-state">{error ? 'error' : 'no-error'}</div>
@@ -247,11 +247,11 @@ describe('Chat Integration Tests', () => {
   it('should validate message data structure from API', async () => {
     const TestDataComponent = () => {
       const { messages, sendMessage } = useChat('data-validation-session')
-      
+
       const handleSend = async () => {
         await sendMessage('Data validation test', [])
       }
-      
+
       if (messages.length === 0) {
         return (
           <button onClick={handleSend} data-testid="send-validation">
@@ -259,7 +259,7 @@ describe('Chat Integration Tests', () => {
           </button>
         )
       }
-      
+
       const lastMessage = messages[messages.length - 1]
       const isValid = (
         typeof lastMessage.id === 'number' &&
@@ -267,7 +267,7 @@ describe('Chat Integration Tests', () => {
         typeof lastMessage.isUser === 'boolean' &&
         lastMessage.timestamp instanceof Date
       )
-      
+
       return (
         <div data-testid="message-validation">
           {isValid ? 'valid' : 'invalid'}

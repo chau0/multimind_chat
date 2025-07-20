@@ -8,21 +8,21 @@ graph TD
     A[App Container] --> B[Header]
     A --> C[Chat Window]
     A --> D[Input Area]
-    
+
     B --> B1[🤖 Multi-Agent Chat]
     B --> B2[Agent Selector Dropdown]
-    
+
     C --> C1[Message List]
     C1 --> C2[User Message Bubble]
     C1 --> C3[Agent Message Bubble]
     C3 --> C4[Agent Avatar]
     C3 --> C5[Agent Name]
     C3 --> C6[Message Content]
-    
+
     D --> D1[Mention Input Field]
     D --> D2[Send Button]
     D --> D3[Typing Indicator]
-    
+
     style A fill:#f9f9f9
     style C1 fill:#ffffff
     style D1 fill:#e3f2fd

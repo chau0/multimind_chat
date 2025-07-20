@@ -26,7 +26,7 @@ test.describe('Error Scenarios', () => {
 
     // Should handle error gracefully (no crash)
     await expect(page.locator('h1:has-text("Multimind")')).toBeVisible();
-    
+
     // Input should remain functional
     await expect(messageInput).toBeEnabled();
   });
@@ -74,7 +74,7 @@ test.describe('Error Scenarios', () => {
 
     // Should handle error gracefully
     await expect(page.locator('text=Server error test')).toBeVisible();
-    
+
     // App should remain functional
     await expect(page.locator('h1:has-text("Multimind")')).toBeVisible();
     await expect(messageInput).toBeEnabled();
@@ -99,7 +99,7 @@ test.describe('Error Scenarios', () => {
 
     // Should handle error gracefully
     await expect(page.locator('text=Malformed response test')).toBeVisible();
-    
+
     // App should remain functional
     await expect(page.locator('h1:has-text("Multimind")')).toBeVisible();
   });
@@ -115,7 +115,7 @@ test.describe('Error Scenarios', () => {
 
     // Should show error state but not crash
     await expect(page.locator('h1:has-text("Multimind")')).toBeVisible();
-    
+
     // Should show some kind of error indication
     await expect(page.locator('text=Loading..., text=Error, text=Failed').first()).toBeVisible({ timeout: 10000 });
   });
@@ -134,7 +134,7 @@ test.describe('Error Scenarios', () => {
 
     // Should handle empty agents list
     await expect(page.locator('h1:has-text("Multimind")')).toBeVisible();
-    
+
     // Should still show input
     await expect(page.locator('textarea[placeholder*="Type your message"]')).toBeVisible();
   });
@@ -155,7 +155,7 @@ test.describe('Error Scenarios', () => {
     // Should load fresh state
     await expect(page.locator('h1:has-text("Multimind")')).toBeVisible();
     await expect(page.locator('textarea[placeholder*="Type your message"]')).toBeVisible();
-    
+
     // Should be able to send new messages
     await messageInput.fill('Message after refresh');
     await sendButton.click();
@@ -169,10 +169,10 @@ test.describe('Error Scenarios', () => {
     // Send multiple messages quickly
     await messageInput.fill('Message 1');
     await sendButton.click();
-    
+
     await messageInput.fill('Message 2');
     await sendButton.click();
-    
+
     await messageInput.fill('Message 3');
     await sendButton.click();
 
@@ -191,13 +191,13 @@ test.describe('Error Scenarios', () => {
 
     // Create very long message
     const longMessage = 'A'.repeat(1000);
-    
+
     await messageInput.fill(longMessage);
     await sendButton.click();
 
     // Should handle long message
     await expect(page.locator(`text=${longMessage.substring(0, 50)}`)).toBeVisible();
-    
+
     // Should not break layout
     await expect(page.locator('h1:has-text("Multimind")')).toBeVisible();
   });
@@ -208,13 +208,13 @@ test.describe('Error Scenarios', () => {
 
     // Test various special characters
     const specialMessage = 'Test: <script>alert("xss")</script> & "quotes" & émojis 🚀 & symbols ©®™';
-    
+
     await messageInput.fill(specialMessage);
     await sendButton.click();
 
     // Should handle special characters safely
     await expect(page.locator('text=Test:').first()).toBeVisible();
-    
+
     // Should not execute scripts
     await expect(page.locator('h1:has-text("Multimind")')).toBeVisible();
   });

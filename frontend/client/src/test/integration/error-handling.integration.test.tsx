@@ -5,9 +5,9 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import ChatPage from '@/pages/chat'
 import { useAgents } from '@/hooks/useAgents'
 import { useChat } from '@/hooks/useChat'
-import { 
-  setupIntegrationTests, 
-  createIntegrationQueryClient, 
+import {
+  setupIntegrationTests,
+  createIntegrationQueryClient,
   resetTestData,
   integrationTestSetup
 } from '../integration-setup'
@@ -16,7 +16,7 @@ import React from 'react'
 // Integration tests for error handling scenarios
 describe('Error Handling Integration Tests', () => {
   setupIntegrationTests()
-  
+
   let queryClient: any
 
   beforeEach(async () => {
@@ -39,10 +39,10 @@ describe('Error Handling Integration Tests', () => {
 
     const TestComponent = () => {
       const { data: agents, isLoading, error } = useAgents()
-      
+
       if (isLoading) return <div>Loading...</div>
       if (error) return <div data-testid="connection-error">Connection Error</div>
-      
+
       return <div>Success</div>
     }
 
@@ -58,13 +58,13 @@ describe('Error Handling Integration Tests', () => {
   it('should handle API timeout scenarios', async () => {
     // Mock slow API response
     const originalFetch = global.fetch
-    global.fetch = vi.fn().mockImplementation(() => 
+    global.fetch = vi.fn().mockImplementation(() =>
       new Promise(resolve => setTimeout(resolve, 35000)) // Longer than test timeout
     )
 
     const TestComponent = () => {
       const { data: agents, isLoading, error } = useAgents()
-      
+
       return (
         <div>
           <div data-testid="loading-state">{isLoading ? 'loading' : 'not-loading'}</div>
@@ -91,10 +91,10 @@ describe('Error Handling Integration Tests', () => {
 
     const TestComponent = () => {
       const { data: agents, error } = useAgents()
-      
+
       if (error) return <div data-testid="parse-error">Parse Error</div>
       if (!agents) return <div>Loading...</div>
-      
+
       return <div>Success</div>
     }
 
@@ -110,7 +110,7 @@ describe('Error Handling Integration Tests', () => {
   it('should handle HTTP error status codes', async () => {
     // Test different HTTP error codes
     const errorCodes = [400, 401, 403, 404, 500, 502, 503]
-    
+
     for (const code of errorCodes) {
       const originalFetch = global.fetch
       global.fetch = vi.fn().mockResolvedValue({
@@ -174,7 +174,7 @@ describe('Error Handling Integration Tests', () => {
   it('should recover from temporary network issues', async () => {
     let failCount = 0
     const originalFetch = global.fetch
-    
+
     // Fail first 2 requests, then succeed
     global.fetch = vi.fn().mockImplementation((...args) => {
       if (args[0].includes('/api/v1/agents')) {
@@ -188,7 +188,7 @@ describe('Error Handling Integration Tests', () => {
 
     const TestComponent = () => {
       const { data: agents, isLoading, error, refetch } = useAgents()
-      
+
       return (
         <div>
           <div data-testid="status">
@@ -236,7 +236,7 @@ describe('Error Handling Integration Tests', () => {
     const TestComponent = () => {
       const { error: agentsError } = useAgents()
       const { error: chatError } = useChat()
-      
+
       return (
         <div>
           <div data-testid="agents-error">{agentsError ? 'agents-error' : 'agents-ok'}</div>
@@ -273,9 +273,9 @@ describe('Error Handling Integration Tests', () => {
 
     const TestComponent = () => {
       const { error } = useAgents()
-      
+
       if (!error) return <div>No Error</div>
-      
+
       return (
         <div>
           <div data-testid="error-message">{error.message}</div>

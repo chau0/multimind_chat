@@ -48,15 +48,15 @@ describe('useAgents', () => {
 
   it('fetches agents successfully', async () => {
     vi.mocked(chatService.getAgents).mockResolvedValue(mockAgents)
-    
+
     const { result } = renderHook(() => useAgents(), { wrapper: createWrapper() })
-    
+
     expect(result.current.isLoading).toBe(true)
-    
+
     await waitFor(() => {
       expect(result.current.isSuccess).toBe(true)
     })
-    
+
     expect(result.current.data).toEqual(mockAgents)
     expect(result.current.isLoading).toBe(false)
     expect(chatService.getAgents).toHaveBeenCalledTimes(1)
@@ -65,35 +65,35 @@ describe('useAgents', () => {
   it('handles fetch error', async () => {
     const error = new Error('Failed to fetch agents')
     vi.mocked(chatService.getAgents).mockRejectedValue(error)
-    
+
     const { result } = renderHook(() => useAgents(), { wrapper: createWrapper() })
-    
+
     await waitFor(() => {
       expect(result.current.isError).toBe(true)
     })
-    
+
     expect(result.current.error).toEqual(error)
     expect(result.current.data).toBeUndefined()
   })
 
   it('uses correct query key', () => {
     vi.mocked(chatService.getAgents).mockResolvedValue(mockAgents)
-    
+
     const { result } = renderHook(() => useAgents(), { wrapper: createWrapper() })
-    
+
     // The query key should be used for caching
     expect(result.current.isLoading).toBe(true)
   })
 
   it('has correct stale time configuration', async () => {
     vi.mocked(chatService.getAgents).mockResolvedValue(mockAgents)
-    
+
     const { result } = renderHook(() => useAgents(), { wrapper: createWrapper() })
-    
+
     await waitFor(() => {
       expect(result.current.isSuccess).toBe(true)
     })
-    
+
     // Data should be considered fresh for 5 minutes
     expect(result.current.isStale).toBe(false)
   })

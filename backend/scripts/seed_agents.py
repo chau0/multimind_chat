@@ -1,6 +1,7 @@
 from app.utils.db import SessionLocal
 from app.models.chat import Agent
 
+
 def seed_agents():
     db = SessionLocal()
     try:
@@ -9,10 +10,10 @@ def seed_agents():
         if existing_agents > 0:
             print(f"Database already has {existing_agents} agents. Skipping seed.")
             return
-            
+
         agents = [
             Agent(
-                name="Assistant", 
+                name="Assistant",
                 description="A helpful AI assistant that can answer questions and provide information.",
                 display_name="AI Assistant",
                 avatar="AI",
@@ -25,10 +26,10 @@ def seed_agents():
 - Maintain a positive and encouraging tone
 - Admit when you don't know something and suggest alternatives
 
-Always aim to be genuinely helpful while being concise and easy to understand."""
+Always aim to be genuinely helpful while being concise and easy to understand.""",
             ),
             Agent(
-                name="Coder", 
+                name="Coder",
                 description="A programming expert that can help with code, debugging, and technical solutions.",
                 display_name="Code Expert",
                 avatar="CODE",
@@ -41,10 +42,10 @@ Always aim to be genuinely helpful while being concise and easy to understand.""
 - Help debug issues with systematic approaches
 - Stay current with modern development practices
 
-Focus on practical, production-ready solutions with proper error handling and security considerations."""
+Focus on practical, production-ready solutions with proper error handling and security considerations.""",
             ),
             Agent(
-                name="Writer", 
+                name="Writer",
                 description="A creative writing assistant that helps with content creation and editing.",
                 display_name="Creative Writer",
                 avatar="WRITE",
@@ -57,10 +58,10 @@ Focus on practical, production-ready solutions with proper error handling and se
 - Help with grammar, structure, and flow improvements
 - Inspire creativity while maintaining clarity
 
-Whether it's fiction, marketing copy, or technical documentation, you make every piece of writing shine."""
+Whether it's fiction, marketing copy, or technical documentation, you make every piece of writing shine.""",
             ),
             Agent(
-                name="Researcher", 
+                name="Researcher",
                 description="A research specialist that provides detailed analysis and factual information.",
                 display_name="Research Analyst",
                 avatar="RSRCH",
@@ -73,8 +74,8 @@ Whether it's fiction, marketing copy, or technical documentation, you make every
 - Break down complex data into digestible insights
 - Maintain objectivity while acknowledging limitations
 
-You excel at finding patterns, validating information, and presenting comprehensive analysis that helps users make informed decisions."""
-            )
+You excel at finding patterns, validating information, and presenting comprehensive analysis that helps users make informed decisions.""",
+            ),
         ]
         for agent in agents:
             db.add(agent)
@@ -85,6 +86,7 @@ You excel at finding patterns, validating information, and presenting comprehens
         db.rollback()
     finally:
         db.close()
+
 
 if __name__ == "__main__":
     seed_agents()

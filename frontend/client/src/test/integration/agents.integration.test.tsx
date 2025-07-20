@@ -3,19 +3,19 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { AgentSelector } from '@/components/AgentSelector'
 import { useAgents } from '@/hooks/useAgents'
-import { 
-  setupIntegrationTests, 
-  createIntegrationQueryClient, 
-  resetTestData, 
+import {
+  setupIntegrationTests,
+  createIntegrationQueryClient,
+  resetTestData,
   seedTestData,
-  integrationTestSetup 
+  integrationTestSetup
 } from '../integration-setup'
 import React from 'react'
 
 // Integration tests for Agents API
 describe('Agents Integration Tests', () => {
   setupIntegrationTests()
-  
+
   let queryClient: any
 
   beforeEach(async () => {
@@ -35,11 +35,11 @@ describe('Agents Integration Tests', () => {
   it('should fetch real agents from backend API', async () => {
     const TestComponent = () => {
       const { data: agents, isLoading, error } = useAgents()
-      
+
       if (isLoading) return <div>Loading agents...</div>
       if (error) return <div>Error: {error.message}</div>
       if (!agents) return <div>No agents found</div>
-      
+
       return (
         <div>
           <div data-testid="agent-count">{agents.length} agents loaded</div>
@@ -75,7 +75,7 @@ describe('Agents Integration Tests', () => {
 
   it('should integrate AgentSelector with real backend data', async () => {
     const mockOnSelect = vi.fn()
-    
+
     renderWithProviders(
       <AgentSelector onAgentSelect={mockOnSelect} />
     )
@@ -101,10 +101,10 @@ describe('Agents Integration Tests', () => {
 
     const TestComponent = () => {
       const { data: agents, isLoading, error } = useAgents()
-      
+
       if (isLoading) return <div>Loading agents...</div>
       if (error) return <div data-testid="error">Error: {error.message}</div>
-      
+
       return <div>Success</div>
     }
 
@@ -121,12 +121,12 @@ describe('Agents Integration Tests', () => {
   it('should validate agent data structure from API', async () => {
     const TestComponent = () => {
       const { data: agents, isLoading } = useAgents()
-      
+
       if (isLoading) return <div>Loading...</div>
       if (!agents || agents.length === 0) return <div>No agents</div>
-      
+
       const firstAgent = agents[0]
-      
+
       return (
         <div>
           <div data-testid="agent-structure-valid">
@@ -158,7 +158,7 @@ describe('Agents Integration Tests', () => {
   it('should cache agents data correctly', async () => {
     let fetchCount = 0
     const originalFetch = global.fetch
-    
+
     global.fetch = vi.fn().mockImplementation((...args) => {
       if (args[0].includes('/api/v1/agents')) {
         fetchCount++
@@ -178,7 +178,7 @@ describe('Agents Integration Tests', () => {
 
     // Render component twice
     const { rerender } = renderWithProviders(<TestComponent />)
-    
+
     await waitFor(() => {
       expect(screen.queryByText('Loading...')).not.toBeInTheDocument()
     })

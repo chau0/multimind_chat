@@ -8,7 +8,7 @@ This document provides a comprehensive overview of the unit tests created for th
 
 ### Test Files Created
 - `test_chat_service.py` - Chat service business logic tests
-- `test_agent_service.py` - Agent service tests  
+- `test_agent_service.py` - Agent service tests
 - `test_llm_service.py` - LLM integration service tests
 - `test_chat_repo.py` - Chat repository data access tests
 - `test_agent_repo.py` - Agent repository data access tests
