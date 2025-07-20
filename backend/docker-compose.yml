@@ -14,9 +14,8 @@ services:
       - ./logs:/app/logs
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
-# Note: No local database service needed since we're using Azure SQL Database
-# The backend will connect directly to Azure SQL Database using the connection string
-      - .env
+# Note: No local database service needed since we're using Supabase/PostgreSQL
+# The backend will connect directly to the database using the connection string
 
 volumes:
   postgres_data:
